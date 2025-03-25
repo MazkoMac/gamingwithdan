@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="style/images/game_pad.ico" type="image/x-icon">
+    <title>Kaizo Hacks</title>
+
+    <style>
+        hr {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border: 0;
+            border-top: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        @font-face {
+            font-family: snesFont;
+            src: url("style/fonts/snes.ttf");
+            /* IE9 */
+        }
+
+        @font-face {
+            font-family: marioFont;
+            src: url("style/fonts/mario.ttf");
+            /* IE9 */
+        }
+
+         {{>navbar_styles}}
+    </style>
+</head>
+
+<body>
+    {{>navbar}}
+    <div class="container">
+        <div class="row" style="padding-top: 52px;">
+            <div class="col text-center" style="color: black; font-size:82px; font-family: snesFont;">
+                SMW Kaizo Hacks
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center" style="font-size:22px; padding-bottom: 12px;">
+                <button type="button" class="btn btn-primary" style="background-color: #049CD8 !important;"
+                    data-toggle="modal" data-target="#exampleModalCenter">
+                    The Challenge
+                </button>
+            </div>
+        </div>
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #049CD8 !important;">
+                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">SMW Kaizo
+                            Hack Challenge</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div>The challenge is quite simple - conquer as many Kaizo: Lite hacks as possible on the
+                            SMBCentral.com
+                            platform.
+                        </div>
+                        <div style="padding-top: 16px;">
+                            <ol>
+                                <li>In general, nothing can be looked up or referenced online. The only exception to
+                                    this
+                                    is unknown tech, which can be very gingerly looked up
+                                </li>
+                                <li style="padding-top: 12px;">To complete a hack means to see the ending credits.
+                                    Whether this comes after the
+                                    normal
+                                    boss or a special world boss is at the mercy of the creator
+                                </li>
+
+                            </ol>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            style="background-color: #049CD8 !important;">Close</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center" style="color: black; font-size:12px; padding-bottom: 12px; padding-top: 32px;">
+                These Kaizo hath been conquered...
+            </div>
+        </div>
+        <div class="row" style="padding-bottom: 32px; font-size: 12px;">
+            <div class="col-md-4 col-lg-4 col-xl-4 col-sm-12">
+                <ul class="list-group">
+                    <li class="list-group-item">Baby Kaizo World</li>
+                    <li class="list-group-item">Backwards Mario World</li>
+                    <li class="list-group-item">CoolZone</li>
+                    <li class="list-group-item">Kaizo Kindergarten</li>
+                    <li class="list-group-item">Learn2Kaizo</li>
+                    <li class="list-group-item">New Super Mario Pants World</li>
+                    <li class="list-group-item">Ninja World</li>
+                    <li class="list-group-item">Ninja World 2</li>
+
+                </ul>
+            </div>
+            <div class="col-md-4 col-lg-4 col-xl-4 col-sm-12">
+                <ul class="list-group">
+                    <li class="list-group-item">Quickie World</li>
+                    <li class="list-group-item">Quickie World 2</li>
+                    <li class="list-group-item">Riversong</li>
+                    <li class="list-group-item">Robfather World</li>
+                    <li class="list-group-item">Snoman's Land</li>
+                    <li class="list-group-item">Square</li>
+                    <li class="list-group-item">Super Beast World</li>
+                    <li class="list-group-item">Super Glitchcat World</li>
+
+                </ul>
+
+            </div>
+            <div class="col-md-4 col-lg-4 col-xl-4 col-sm-12">
+                <ul class="list-group">
+                    <li class="list-group-item">Princess Kaizo World</li>
+                    <li class="list-group-item">Super Big Super Shy World</li>
+                    <li class="list-group-item">Super Gracie World</li>
+                    <li class="list-group-item">Super Maple World</li>
+                    <li class="list-group-item">Super Peggy World</li>
+                    <li class="list-group-item">Super Ryu World</li>
+                    <li class="list-group-item">Super Slim World</li>
+                    <li class="list-group-item">Super Kurisu World</li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            {{#each result}}
+
+            <div class="card mb-3" style="width: 650px; margin: 25px;">
+
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <div class="row h-100 justify-content-center align-items-center">
+                            <img src="{{image}}" height="150px" width="200px" alt="...">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-family: marioFont;">{{name}}</h5>
+                            <p class="card-text">{{description}}</p>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p class="card-text"><small class="text-muted">Difficulty:
+                                            {{difficulty}}/5</small>
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="card-text"><small class="text-muted">Rating: {{rating}}/5</small>
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="card-text"><small class="text-muted">Time: {{time}}</small></p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            {{/each}}
+
+        </div>
+
+        {{#if paginator}}
+        <nav aria-label="page navigation">
+            <ul class="pagination">
+
+                {{#paginator paginator type="prev"}}
+                <li class="page-item"><a class="page-link" href="{{prev}}">Previous</a></li>
+                {{/paginator}}
+
+                {{#paginator paginator type="links" limit="10"}}
+                <li class="page-item {{#if active}}active{{/if}}"><a class="page-link" href="{{href}}">{{n}}</a></li>
+                {{/paginator}}
+
+                {{#paginator paginator type="next"}}
+                <li class="page-item"><a class="page-link" href="{{next}}">Next</a></li>
+                {{/paginator}}
+
+            </ul>
+        </nav>
+        {{/if}}
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

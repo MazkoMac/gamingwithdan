@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="style/images/game_pad.ico" type="image/x-icon">
+    <title>Games List</title>
+
+    <style>
+   
+         {{>navbar_styles}}
+
+
+           @font-face {
+            font-family: Nova;
+            src: url("style/fonts/Nova-Bold.otf");
+            /* IE9 */
+        }
+
+        @font-face {
+            font-family: Nova-Light;
+            src: url("style/fonts/Nova-Light.ttf");
+            /* IE9 */
+        }
+    </style>
+</head>
+
+<body>
+    {{>navbar}}
+
+    <div class="container">
+        <div class="row" style="padding-top:128px;">
+            <div class="col-md-6">
+                <p style="font-size: 128px; font-family: Nova;">about</p>
+                <p style="font-family: Nova-Light; font-size: 32px;">I am a passionate video game player and a growing <a href="www.twitch.com/MazkoMac" style="display:inline">Twitch</a> streamer hailing from Vancouver, British Columbia.</p>
+                <p style="font-family: Nova-Light; font-size: 22px">Additionally, I am an application and website developer pursuing a career in digital forensics and cybersecurity. This site is an attempt to blend
+                    my passion of gaming with my love of development and design. Who knows where this will go, but the process of making it has been worth it alone.
+                </p>
+            </div>
+            <div class="col-md-6" style="padding-top: 80px;">
+            <img src="style/images/dan.jpg"/  class="img-fluid" width="750px" height="auto" style="border-radius:360px; margin-left:2rem;">
+            </div>
+        </div>
+    </div>
+   
+
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="style/images/game_pad.ico" type="image/x-icon">
+    <title>Games List</title>
+
+    <style>
+        #gamesList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #gamesList li {
+            display: inline-block;
+            margin: 8px;
+        }
+
+        .gameButton {
+            background-color: #fd1e1e;
+            border: red;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: default;
+        }
+
+
+
+
+
+
+        hr {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border: 0;
+            border-top: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        @font-face {
+            font-family: snesFont;
+            src: url("style/fonts/snes.ttf");
+            /* IE9 */
+        }
+
+        @font-face {
+            font-family: marioFont;
+            src: url("style/fonts/mario.ttf");
+            /* IE9 */
+        }
+
+            {
+                {
+                >navbar_styles
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {{>navbar}}
+    <div class="container">
+        <div class="row" style="padding-top: 52px;">
+            <div class="col text-center" style="color: black; font-size: 82px; font-family: snesFont;">
+                Games List
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <button id="button" type="button" class="btn btn-primary btn-lg">Generate</button>
+        </div>
+        <div class="row justify-content-center">
+            <p id="game" style="font-weight:bold;"></p>
+        </div>
+
+        <div class="row justify-content-center">
+            <ul id="gamesList" style="list-style-type: none; display: flex; justify-content: center; align-items: center; font-size:16px;">
+                <!-- This is where the games from the games table will be displayed -->
+                {{#each games}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+
+    <script>
+
+        // Function to fetch and display random games
+        function generateRandomGames() {
+            // Make an AJAX request to the server
+            fetch('/games-list')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response data:', data); // Log the response data for debugging
+
+                    // Update the content of the games container with the received games
+                    const gamesContainer = document.getElementById('game');
+                    gamesContainer.textContent = data.gameslist;
+
+                    // Update the content of the games list from the games table
+                    const gamesListContainer = document.getElementById('gamesList');
+                    gamesListContainer.innerHTML = data.games.map(game => `<li>${game}</li>`).join('');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    console.log('Full error object:', error); // Log the entire error object
+                });
+        }
+
+        // Attach an event listener to the "Generate" button
+        const generateButton = document.getElementById('button');
+        generateButton.addEventListener('click', generateRandomGames);
+
+        // Initial call to generate random games and load games from the games table when the page is loaded
+        console.log("Page loaded, generating random games...");
+        generateRandomGames();
+
+
+
+
+
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

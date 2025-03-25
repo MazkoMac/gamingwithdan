@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="style/images/game_pad.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style/css/challenges.css">
+    <title>Challenges</title>
+
+    <style>
+   
+         {{>navbar_styles}}
+
+             @font-face {
+            font-family: titleFont;
+            src: url("style/fonts/aerological.ttf");
+            /* IE9 */
+        }
+
+
+           @font-face {
+            font-family: Nova;
+            src: url("style/fonts/Nova-Bold.otf");
+            /* IE9 */
+        }
+
+        @font-face {
+            font-family: Nova-Light;
+            src: url("style/fonts/Nova-Light.ttf");
+            /* IE9 */
+        }
+
+
+        @font-face {
+            font-family: Roboto;
+            src: url("style/fonts/Roboto-Thin.ttf");
+            /* IE9 */
+        }
+    </style>
+</head>
+
+<body>
+    {{>navbar}}
+
+    <div class="container-fluid">
+
+    <div class="bg2" style="height: 70vh">
+        
+
+    </div>
+
+    </div>
+
+
+    <div class="container-fluid" style="padding-bottom: 64px;">
+            <div class="row justify-content-center" style="padding-top: 64px;">
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4" id="responsive">
+                    <p class="header">
+                        52 Games In A Year
+                    </p>
+                    <p class="body">
+                        The challenge is quite simple - try to beat 52 games in the current year. This is a feature challenge for the website and has it's own
+                        dedicated page right <a href="/yearly-challenge-2024" style="display:inline;">here</a>. Click on "The Challenge" box to get the rules and stipulations for a game to be considered
+                        "beat".
+                    </p>
+
+                    <p class="body">
+                        Games Beat in 2024: <b>{{gamesCount}}</b>
+                    </p>
+
+
+                </div>
+
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4" style="text-align: center;">
+                     <img src="style/images/video_games.png"/  class="img-fluid" width="750px" height="auto" style="margin-left:5rem; margin-top: 1rem;" id="responsiveImage">
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container-fluid" style="background-color:aliceblue; padding-bottom: 64px;">
+            <div class="row justify-content-center" style="padding-top: 64px;">
+                
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4" style="text-align: center;">
+                     <img src="style/images/kaizo.png"/  class="img-fluid" width="750px" height="auto" style="margin-top: 3rem;">
+                </div>
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4" style="margin-left:5rem;" id="responsive">
+                    <p class="header" id="rogueHeader">
+                        Kaizo Hack Clears
+                    </p>
+                    <p class="body">
+                       As an homage to the legendary Dode, I have very unobtainable goal of beating every Kaizo Light hack on SMW central. I am still a relative noob to the genre, but have been slowly getting better and conquering hack after hack.
+                    </p>
+                      <p class="body">
+                    Hacks Cleared: <b>{{kaizoCount}}</b>
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+
+
+         <div class="container-fluid" style="padding-bottom: 64px;">
+            <div class="row justify-content-center" style="padding-top: 64px;">
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4" id="responsive">
+                    <p class="header">
+                        Fall Guys Crowns
+                    </p>
+                    <p class="body">
+                        Fall Guys came outta nowhere and now I find it my most played game of the last decade. This challenge is to win, win and win crowns. The goal is ultimately
+                        reach crown level 50 for the legendary Golden Knight costume...but that's going to take 3039 crowns...so it could be a while. Every so often, I will update this crown count.
+                    </p>
+
+                    <p class="body">
+                        Current Crown Count: <b>1480</b>
+                    </p>
+
+
+                </div>
+
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4"  style="text-align: center;">
+                     <img src="style/images/fall_guys.jpg"/  class="img-fluid" width="750px" height="auto" style="margin-left:5rem; margin-top: 0rem;" id="responsive">
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid" style="background-color:aliceblue; padding-bottom: 64px;">
+            <div class="row justify-content-center" style="padding-top: 64px;">
+                
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4"  style="text-align: center;">
+                     <img src="style/images/rogue.png"/  class="img-fluid" width="750px" height="auto" style="margin-top: 3rem;" id="responsive">
+                </div>
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4" style="margin-left:5rem;" id="responsive">
+                    <p class="header" id="rogueHeader">
+                        Triple Roguelite Streak
+                    </p>
+                    <p class="body">
+                       In this gaming challenge, the goal is to beat <i>The Binding of Isaac, Wizard of Legend, and Enter the Gungeon</i> using randomized builds - all in a row. Beating all three games will add 1 to the streak. The conditions for each game are the following.
+                    </p>
+                    <ol>
+                        <li><b>Binding of Isaac</b> - Beat the Chest with Eden</li>
+                        <li><b>Enter the Gungeon</b> - Beat Licht with Paradox</li>
+                        <li><b>Wizard of Legend</b> - Beat Master Sura with randomized build</li>
+                    </ol>
+                      <p class="body">
+                    Current Streak: <b>0</b>
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="container-fluid" style="padding-bottom: 64px;">
+            <div class="row justify-content-center" style="padding-top: 64px;">
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4" id="responsive">
+                    <p class="header">
+                        Rocket League Ranked
+                    <p class="body">
+                        Have played Rocket League for years casually and have never quite cracked the champ barrier. This year is the year.
+                    </p>
+
+                    <p class="body">
+                        Current Rank: <b>Champion 1 - Division 2</b>
+                    </p>
+
+
+                </div>
+
+                <div class="col-12 col-sm-12 col-lg-12 col-xl-4"  style="text-align: center;">
+                     <img src="style/images/league.jpg"/  class="img-fluid" width="750px" height="auto" style="margin-left:5rem; margin-top: 0rem;" id="responsive">
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+      {{!-- <div class="container">
+            <div class="row" style="padding-top: px;">
+                <div class="col text-center" style="color: black; font-family: titleFont; font-size:9vw;">
+                    CHALLENGES
+                </div>
+            </div>
+        </div>
+    --}}
+    <script>
+    console.log(totalCount)  
+    </script> 
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

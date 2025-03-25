@@ -1,0 +1,31 @@
+.bg {
+  /* The image used */
+  background-image: url("../images/background_1.jpg");
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+
+.bg2 {
+  /* The image used */
+  background-image: url("../images/experiment.png");
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.header {
+  font-size: 3rem;
+  font-family: Nova;
+}
+
+.body {
+  font-size: 1.5rem;
+  font-family: Nova-Light;
+}
+
