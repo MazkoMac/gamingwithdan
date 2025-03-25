@@ -9,7 +9,7 @@ const session = require("express-session");
 const { request } = require("http");
 
 
-const PORT = 8080;
+const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.render("index.hbs");
@@ -455,4 +455,4 @@ app.post("/edit-challenge/:id", (req, res) => {
 
 //Listening Port
 
-app.listen(PORT, () => log("Server is starting on PORT,", 8080));
+app.listen(PORT, () => console.log(`Server is starting on PORT ${PORT}`));
