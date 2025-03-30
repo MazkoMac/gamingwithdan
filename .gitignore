@@ -4,3 +4,7 @@ node_modules/
 *.log
 *.pem
 *.ppk
+
+# Ignore SQLite database and export tables
+db.sqlite
+tables/
