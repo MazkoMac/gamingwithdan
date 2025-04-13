@@ -1,81 +1,21 @@
-<style>
-    a {
-        text-decoration: none;
-        font-family: Arial;
-        display: block;
+<nav class="navbar">
+  <div class="navbar__logo">
+    <a href="/"><img src="/style/images/retro.png" alt="Retro Logo" /></a>
+  </div>
 
-    }
-</style>
+  <button class="navbar__toggle" aria-label="Toggle menu" onclick="toggleMenu()">☰</button>
 
-
-
-
-<nav class="navbar navbar-expand-lg navbar fixed-top navbar-light" style="background-color: white;">
-    {{!-- <a class="navbar-brand" href="/">Welcome</a> --}}
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-         <div class="nav-item mr-auto">
-                <a href="/"><img src="/style/images/retro.png" height="38px;" width="auto;"/></a>
-            </div>
-
-        <ul class="navbar-nav ml-auto">
-
-           
-
-
-            <li class="nav-item">
-                <a class="nav-link" id="games" href="/challenges" style="color: black">CHALLENGES</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" id="games" href="/yearly-challenge-2025" style="color: black">52 GAMES</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="kaizo" href="/kaizo-hacks" style="color: black">KAIZO HACKS</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="games" href="/about" style="color: black" "
-                    ;>ABOUT</a>
-            </li>
-            {{!-- <li class=" nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Top 5 Lists
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">All Time</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">RPG</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">FPS Shooter</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Platformer</a>
-                    </div>
-            </li> --}}
-        </ul>
-        {{!-- <form class="form-inline my-2 my-lg-0">
-            <a href="/login" style="display: block; text-decoration: none;"><span class="btn btn-dark my-2 my-sm-0"
-                    style="color: white; display: block;">Login</span></a>
-
-        </form> --}}
-
-    </div>
+  <ul class="navbar__links" id="navbarLinks">
+    <li>
+      <a href="/challenges" class="{{#if (eq currentPage 'challenges')}}active{{/if}}">Challenges</a>
+    </li>
+    <li><a href="/yearly-challenge-2025">52 GAMES</a></li>
+    <li><a href="/kaizo-hacks">KAIZO</a></li>
+    <li>
+      <a href="/backlog" class="{{#if (eq currentPage 'backlog')}}active{{/if}}">Backlog</a>
+    </li>
+    <li>
+      <a href="/about" class="{{#if (eq currentPage 'about')}}active{{/if}}">ABOUT</a>
+    </li>
+  </ul>
 </nav>
-
-<script>
-
-    if (window.location.href.includes("yearly-challenge-2020")) {
-        document.getElementById("games").style.color = "black";
-    }
-
-    if (window.location.href.includes("kaizo-hacks")) {
-        document.getElementById("kaizo").style.color = "black";
-    }
-
-
-</script>

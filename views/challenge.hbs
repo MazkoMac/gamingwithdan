@@ -1,190 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
+<link rel="stylesheet" href="/style/css/challenge.css">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
-    <link rel="shortcut icon" href="style/images/game_pad.ico" type="image/x-icon">
-     <link rel="stylesheet" href="style/css/challenge.css">
-     <link rel="preconnect" href="https://fonts.gstatic.com"> 
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <title>52 Games</title>
+<main class="challenge-wrapper">
+  <section class="challenge-intro">
+    <h1 class="challenge-title">52 Games In {{year}}</h1>
 
-    <style>
-        hr {
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-            border: 0;
-            border-top: 1px solid rgba(255, 0, 0, 0.3);
-        }
-
-        @font-face {
-            font-family: gameTitleFont;
-            src: url("style/fonts/headliner.ttf");
-            /* IE9 */
-        }
-
-        @font-face {
-            font-family: ratingFont;
-            src: url("style/fonts/squirk.ttf");
-            /* IE9 */
-        }
-
-        @font-face {
-            font-family: titleFont;
-            src: url("style/fonts/crackman.ttf");
-            /* IE9 */
-        }
-
-        {{>navbar_styles}}
-
-
-    </style>
-</head>
-
-<body>
-    {{>navbar}}
-    <div class="container">
-        <div class="row" style="padding-top: 52px;">
-            <div class="col text-center" style="color: black; font-size:102px; font-family: gameTitleFont; ">
-                52 Games In 2020
-            </div>
-        </div>
-
-           <div class="button-container">
-    <div class="button-wrapper">
-        <button class="button"><a href="/yearly-challenge-2020" style="text-decoration: none; color: white;">2020 Challenge</a></button>
-    </div>
-    <div class="button-wrapper">
-        <button class="button"><a href="/yearly-challenge-2021" style="text-decoration: none; color: white;">2021 Challenge</a></button>
-    </div>
-    <div class="button-wrapper">
-        <button class="button"><a href="/yearly-challenge-2022" style="text-decoration: none; color: white;">2022 Challenge</a></button>
-    </div>
-    <div class="button-wrapper">
-        <button class="button"><a href="/yearly-challenge-2023" style="text-decoration: none; color: white;">2023 Challenge</a></button>
-    </div>
-    <div class="button-wrapper">
-        <button class="button"><a href="/yearly-challenge-2024" style="text-decoration: none; color: white;">2024 Challenge</a></button>
-    </div>
-    <div class="button-wrapper">
-        <button class="button"><a href="/yearly-challenge-2025" style="text-decoration: none; color: white;">2025 Challenge</a></button>
-    </div>
-</div>
-
-    
-    
-        <div class="row" style="padding-top:64px;">
-            <div class="col text-center">
-                <span class="button2" 
-                    data-toggle="modal" data-target="#exampleModalCenter">
-                    <a href="#">
-                    
-                    </a>
-                </span>
-            </div>
-        </div>
-        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: black;">
-                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">52 Games Challenge</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div>The challenge is quite simple - try to beat 52 games (or more) in 2019
-                        </div>
-                        <div style="padding-top: 16px;">
-                            <ol>
-                                <li>In general, nothing can be looked up or referenced online. This notion would mainly
-                                    concern
-                                    for linear games and could be different from understanding the mechanics of, for
-                                    example, a rogue lite
-                                </li>
-                                <li style="padding-top: 12px;">To complete a game means to see it's ending credits.
-                                    Where ending credits
-                                    aren't present - best judgment will have to prevail
-                                </li>
-                                <li style="padding-top: 12px;">It is permissable to beat a previously beaten game, and a
-                                    game that
-                                    was started in 2019 can be beat in 2020 without restarting progress.
-                                </li>
-                                <li style="padding-top: 12px;">Difficutly is flexible. However, for the spirit of the
-                                    competition,
-                                    beating games on higher difficulties is encouraged while playing a game on the
-                                    easiest difficulty
-                                    is on the verge of a violation.
-                                </li>
-
-                            </ol>
-                        </div>
-
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                            style="background-color: black;">Close</button>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="padding-top: 42px;">
-
-        </div>
-        {{#each result}}
-        <div class="row">
-            <div class="col text-center" style="color: black; font-size:62px; font-family: gameTitleFont; ">
-                {{id}}. {{name}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col text-center" style="color: black; font-size:22px;">
-                <img src="{{image}}" style="max-width: 80%;" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col text-left" style="color: black; font-size:16px; font-family: 'Muli'; padding-top: 32px;">
-                {{description}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col text-center"
-                style="color: black; font-size:22px; padding-top: 32px; font-family: ratingFont;">
-                RATING: {{rating}}/5
-            </div>
-        </div>
-        <hr />
-        {{/each}}
+    <div class="challenge-year-links">
+      <a href="/yearly-challenge-2020">2020</a>
+      <a href="/yearly-challenge-2021">2021</a>
+      <a href="/yearly-challenge-2022">2022</a>
+      <a href="/yearly-challenge-2023">2023</a>
+      <a href="/yearly-challenge-2024">2024</a>
+      <a href="/yearly-challenge-2025">2025</a>
     </div>
 
+    <button class="challenge-modal-btn" onclick="openModal()">The Challenge</button>
 
+    <div id="challenge-modal" class="challenge-modal">
+      <div class="challenge-modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>52 Games Challenge</h3>
+        <p>The challenge is quite simple – try to beat 52 games (or more) in {{year}}.</p>
+        <ol>
+          <li>In general, nothing can be looked up or referenced online (exceptions for understanding rogue-lite mechanics).</li>
+          <li>To complete a game means to see its ending credits. If none exist, best judgment must prevail.</li>
+          <li>Beating previously beaten games is allowed. Games started the previous year are valid.</li>
+          <li>Difficulty is flexible. Higher difficulties are encouraged, while the lowest may violate the spirit of the challenge.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
 
+  <section class="challenge-list">
+    {{#each result}}
+    <div class="challenge-entry">
+      <h2 class="challenge-entry-title">{{id}}. {{name}}</h2>
+      <div class="challenge-entry-image">
+        <img src="{{image}}" alt="{{name}} Cover">
+      </div>
+      <p class="challenge-entry-description">{{description}}</p>
+      <div class="challenge-entry-rating">RATING: {{rating}}/5</div>
+    </div>
+    <hr />
+    {{/each}}
+  </section>
+</main>
 
+<script>
+  function openModal() {
+    document.getElementById('challenge-modal').style.display = 'flex';
+  }
 
+  function closeModal() {
+    document.getElementById('challenge-modal').style.display = 'none';
+  }
 
-
-
-
-
-
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-        crossorigin="anonymous"></script>
-
-</body>
-
-</html>
+  window.onclick = function(event) {
+    const modal = document.getElementById('challenge-modal');
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  }
+</script>

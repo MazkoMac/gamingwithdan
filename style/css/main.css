@@ -1,0 +1,195 @@
+/* -------------------------------
+   FONT STACKS
+---------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Inter:wght@400;600&display=swap');
+
+/* Orbitron for headers/nav/buttons */
+/* Inter for body text, paragraphs, smaller UI text */
+
+
+/* -------------------------------
+   BASE RESET + GLOBAL STRUCTURE
+---------------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+
+/* -------------------------------
+   TYPOGRAPHY
+---------------------------------- */
+
+h1, h2, h3, .navbar, #draw-btn, .about-title {
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #111;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 2.2rem;
+}
+
+h3 {
+  font-size: 1.6rem;
+}
+
+p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+
+/* -------------------------------
+   LINKS
+---------------------------------- */
+
+a {
+  color: #00bcd4;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #008caa;
+}
+
+
+/* -------------------------------
+   IMAGES
+---------------------------------- */
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+
+/* -------------------------------
+   CONTAINERS / LAYOUT HELPERS
+---------------------------------- */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.full-height {
+  height: 100vh;
+}
+
+.centered-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+
+/* -------------------------------
+   NAVBAR (GLOBAL)
+---------------------------------- */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  padding: 10px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  color: #fff;
+}
+
+.navbar__logo img {
+  height: 40px;
+}
+
+.navbar__links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar__links a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+}
+
+.navbar__links a.active {
+  color: #00ffcc;
+  font-weight: bold;
+  text-shadow: 0 0 4px rgba(0, 255, 204, 0.7);
+}
+
+.navbar__toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Mobile Nav */
+@media (max-width: 700px) {
+  .navbar__links {
+    display: none;
+    flex-direction: column;
+    background: #222;
+    width: 100%;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    padding: 10px 0;
+  }
+
+  .navbar__links--open {
+    display: flex;
+  }
+
+  .navbar__toggle {
+    display: block;
+  }
+}

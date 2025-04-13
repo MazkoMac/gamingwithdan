@@ -1,0 +1,207 @@
+/* -------------------------------
+   Wrapper + Layout
+---------------------------------- */
+.kaizo-wrapper {
+    padding: 80px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+  }
+  
+  /* -------------------------------
+     Intro Section
+  ---------------------------------- */
+  .kaizo-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .kaizo-button {
+    display: block;
+    margin: 0 auto;
+    background-color: #049CD8;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .kaizo-button:hover {
+    background-color: #0379aa;
+  }
+  
+  .kaizo-sub {
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 40px;
+    color: #666;
+  }
+  
+  /* -------------------------------
+     Hack Lists (Grid of Lists)
+  ---------------------------------- */
+  .kaizo-lists {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+  }
+  
+  .kaizo-lists ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: #f9f9f9;
+    border-radius: 6px;
+    padding: 10px 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .kaizo-lists li {
+    padding: 6px 0;
+    font-size: 0.95rem;
+    color: #333;
+  }
+  
+  
+  /* -------------------------------
+     Card Grid (Dynamic Hacks)
+  ---------------------------------- */
+  .kaizo-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 30px;
+    padding-top: 40px;
+  }
+  
+  
+  .kaizo-card {
+    display: flex;
+    gap: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    align-items: center;
+    border: 1px solid #00ffcc;
+  }
+  
+  .kaizo-card:hover {
+    border-color: #00ffcc;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: 0.2s ease;
+  }
+
+  .kaizo-card-img img {
+    width: 180px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+  
+  .kaizo-card-content {
+    flex: 1;
+  }
+  
+  .kaizo-card-content h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    margin: 0 0 8px;
+  }
+  
+  .kaizo-card-content p {
+    font-size: 0.95rem;
+    color: #444;
+    margin-bottom: 12px;
+  }
+  
+  .kaizo-card-meta {
+    display: flex;
+    gap: 30px;
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  /*Modal Stuff*/
+
+  /* -------------------------------
+   Custom Modal Styles
+---------------------------------- */
+.kaizo-modal {
+    display: none; /* hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .kaizo-modal-content {
+    background-color: #fff;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+  }
+  
+  .kaizo-modal-content h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .kaizo-modal-content ol {
+    padding-left: 20px;
+  }
+  
+  .kaizo-modal-content .close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #444;
+    transition: color 0.2s ease;
+  }
+  
+  .kaizo-modal-content .close:hover {
+    color: #000;
+  }
+  
+  
+  
+  /* -------------------------------
+     Responsive
+  ---------------------------------- */
+  @media (max-width: 768px) {
+    .kaizo-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .kaizo-card-img img {
+      width: 100%;
+      height: auto;
+    }
+  
+    .kaizo-card-meta {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }

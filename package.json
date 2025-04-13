@@ -14,12 +14,15 @@
     "datatables.net": "^1.10.21",
     "datatables.net-dt": "^1.10.21",
     "express": "^4.17.1",
+    "express-handlebars": "^8.0.1",
     "express-paginatorjs": "^1.0.1",
     "express-session": "^1.17.1",
     "hbs": "^4.1.1",
     "jquery": "^3.5.1",
-    "nodemon": "^2.0.7",
     "request": "^2.88.2",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

@@ -1,12 +1,16 @@
 const express = require("express");
-const log = console.log;
-const app = express();
+const { engine } = require("express-handlebars")
 const path = require("path");
-const hbs = require("hbs");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const { request } = require("http");
 const sqlite3 = require('sqlite3').verbose();
+const hbs = require("hbs");
+
+const app = express();
+const log = console.log;
+const PORT = process.env.PORT || 3000;
+
+// SQLite DB connection
 const db = new sqlite3.Database('./db.sqlite', sqlite3.OPEN_READONLY, (err) => {
   if (err) {
     console.error('Failed to connect to SQLite:', err.message);
@@ -15,27 +19,34 @@ const db = new sqlite3.Database('./db.sqlite', sqlite3.OPEN_READONLY, (err) => {
   }
 });
 
+// View engine setup
+app.engine('hbs', engine({
+  extname: 'hbs',
+  defaultLayout: 'layout',
+  layoutsDir: path.join(__dirname, 'views/layouts'),
+  helpers: {
+    eq: (a, b) => a === b
+  }
+}));
+
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "views"));
+hbs.registerPartials(path.join(__dirname, "views/partials"));
 
 
-const PORT = process.env.PORT || 3000;
+// Static files
+app.use(express.static(path.join(__dirname, "style")));
+app.use("/style", express.static("style"));
 
+// Middleware
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Root route
 app.get("/", (req, res) => {
   res.render("index.hbs");
 });
 
-app.use(express.static(__dirname + "/style"));
-app.use("/style", express.static("style"));
-
-app.use(express.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-  })
-);
-
-
-app.set("view engine", "hbs");
-hbs.registerPartials(__dirname + "/views/partials");
 
 // Routes for Challenge Pages
 
@@ -121,7 +132,7 @@ app.get("/kaizo-hacks", (req, res) => {
       console.error("SQLite error:", err.message);
       res.status(500).send("Database error");
     } else {
-      res.render("kaizo.hbs", { result: rows });
+      res.render("kaizo.hbs", { result: rows, currentPage: "challenges" });
       console.log(rows);
     }
   });
@@ -131,7 +142,7 @@ app.get("/kaizo-hacks", (req, res) => {
 //Route for About Page
 
 app.get("/about", (req, res) => {
-  res.render("about.hbs");
+  res.render("about", { currentPage: "about" });
 });
 
 //Route for Challenge Page
@@ -160,12 +171,46 @@ app.get("/challenges", (req, res) => {
       res.render("challenges.hbs", {
         gamesCount,
         kaizoCount,
+        currentPage: "challenges"
       });
 
       console.log("Kaizo Count:", kaizoCount);
     });
   });
 });
+
+//Backlog route
+
+app.get("/backlog", (req, res) => {
+  res.render("backlog", { currentPage: "backlog" });
+});
+
+//Select 5 Games at Random API Route
+
+app.get("/api/backlog/random", (req, res) => {
+  const count = parseInt(req.query.count) || 6;
+  const query = "SELECT name FROM backlog ORDER BY RANDOM() LIMIT ?";
+
+  db.all(query, [count], (err, rows) => {
+    if (err) {
+      console.error("SQLite error (backlog):", err.message);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    const games = rows.map(row => row.name);
+    res.json(games);
+  });
+});
+
+app.get("/api/backlog/sample", (req, res) => {
+  const query = `SELECT name FROM backlog ORDER BY RANDOM() LIMIT 100`;
+  db.all(query, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: "DB error" });
+    const games = rows.map(row => row.name);
+    res.json(games);
+  });
+});
+
 
 
 //Listening Port

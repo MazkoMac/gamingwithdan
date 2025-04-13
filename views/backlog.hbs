@@ -1,0 +1,91 @@
+<link rel="stylesheet" href="/style/css/backlog.css">
+
+<main class="layout-lock">
+  <div id="backlog-bg"></div>
+  <button id="draw-btn" onclick="drawBacklog()">Attack Backlog</button>
+  <div id="game-cards" class="card-grid"></div>
+</main>
+
+<script>
+  async function drawBacklog() {
+    const unlockSound = new Audio('/style/sounds/unlock.mp3');
+    unlockSound.play();
+
+    const button = document.getElementById('draw-btn');
+    const container = document.getElementById('game-cards');
+    container.innerHTML = '';
+
+    if (!button.classList.contains('rise-up')) {
+      button.classList.add('rise-up');
+    }
+
+    try {
+      const res = await fetch('/api/backlog/random');
+      const games = await res.json();
+      const cards = [];
+
+      games.forEach((game) => {
+        const card = document.createElement('div');
+        card.className = 'flip-card';
+
+        const inner = document.createElement('div');
+        inner.className = 'flip-card-inner';
+
+        const front = document.createElement('div');
+        front.className = 'flip-card-front';
+        front.textContent = "?";
+
+
+        const back = document.createElement('div');
+        back.className = 'flip-card-back';
+        back.textContent = game;
+
+        inner.appendChild(front);
+        inner.appendChild(back);
+        card.appendChild(inner);
+        container.appendChild(card);
+
+        cards.push(card);
+      });
+
+      setTimeout(() => {
+        cards.forEach((card, index) => {
+          setTimeout(() => {
+            card.classList.add('dissolve-in');
+          }, index * 150);
+        });
+
+        setTimeout(() => {
+          cards.forEach((card, index) => {
+            setTimeout(() => {
+              const sound = new Audio('/style/sounds/flip.mp3');
+              sound.play();
+              card.classList.add('flipped');
+            }, index * 500);
+          });
+        }, cards.length * 150 + 500);
+
+      }, 1000);
+
+    } catch (err) {
+      console.error("❌ Error in drawBacklog():", err);
+    }
+  }
+
+  async function populateBacklogBackground() {
+    const res = await fetch('/api/backlog/sample');
+    const games = await res.json();
+    const container = document.getElementById('backlog-bg');
+
+    container.innerHTML = '';
+
+    games.forEach(game => {
+      const div = document.createElement('div');
+      div.className = 'bg-title';
+      div.textContent = game;
+      container.appendChild(div);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', populateBacklogBackground);
+</script>
