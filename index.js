@@ -1,6 +1,6 @@
 const express = require("express");
 const { db } = require('./db');
-const { engine } = require("express-handlebars")
+const { engine } = require("express-handlebars");
 const path = require("path");
 // const bodyParser = require("body-parser");
 const session = require("express-session");
@@ -10,15 +10,6 @@ const hbs = require("hbs");
 const app = express();
 const log = console.log;
 const PORT = process.env.PORT || 3000;
-
-// SQLite DB connection
-// const db = new sqlite3.Database('./db.sqlite', sqlite3.OPEN_READONLY, (err) => {
-//   if (err) {
-//     console.error('Failed to connect to SQLite:', err.message);
-//   } else {
-//     console.log('✅ Connected to SQLite database');
-//   }
-// });
 
 // View engine setup
 app.engine('hbs', engine({
@@ -34,7 +25,6 @@ app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 hbs.registerPartials(path.join(__dirname, "views/partials"));
 
-
 // Static files
 app.use(express.static(path.join(__dirname, "style")));
 app.use("/style", express.static("style"));
@@ -49,175 +39,150 @@ app.get("/", (req, res) => {
   res.render("index.hbs");
 });
 
+// -------- Challenge Pages (read-only) --------
 
-// Routes for Challenge Pages
-
-app.get("/yearly-challenge-2020", (req, res) => {
-  db.all("SELECT * FROM challenge", (err, rows) => {
-    if (err) {
-      console.error("SQLite error:", err.message);
-      res.status(500).send("Database error");
-    } else {
-      res.render("challenge.hbs", { result: rows });
-      console.log(rows);
-    }
-  });
+app.get("/yearly-challenge-2020", (req, res, next) => {
+  try {
+    const rows = db.prepare("SELECT * FROM challenge").all();
+    res.render("challenge.hbs", { result: rows });
+  } catch (err) {
+    console.error("SQLite error:", err.message);
+    next(err);
+  }
 });
 
-
-app.get("/yearly-challenge-2021", (req, res) => {
-  db.all("SELECT * FROM challenge_2021", (err, rows) => {
-    if (err) {
-      console.error("SQLite error:", err.message);
-      res.status(500).send("Database error");
-    } else {
-      res.render("challenge_2021.hbs", { result: rows });
-      console.log(rows);
-    }
-  });
+app.get("/yearly-challenge-2021", (req, res, next) => {
+  try {
+    const rows = db.prepare("SELECT * FROM challenge_2021").all();
+    res.render("challenge_2021.hbs", { result: rows });
+  } catch (err) {
+    console.error("SQLite error:", err.message);
+    next(err);
+  }
 });
 
-
-app.get("/yearly-challenge-2022", (req, res) => {
-  db.all("SELECT * FROM challenge_2022", (err, rows) => {
-    if (err) {
-      console.error("SQLite error:", err.message);
-      res.status(500).send("Database error");
-    } else {
-      res.render("challenge_2022.hbs", { result: rows });
-      console.log(rows);
-    }
-  });
+app.get("/yearly-challenge-2022", (req, res, next) => {
+  try {
+    const rows = db.prepare("SELECT * FROM challenge_2022").all();
+    res.render("challenge_2022.hbs", { result: rows });
+  } catch (err) {
+    console.error("SQLite error:", err.message);
+    next(err);
+  }
 });
 
-app.get("/yearly-challenge-2023", (req, res) => {
-  db.all("SELECT * FROM challenge_2023", (err, rows) => {
-    if (err) {
-      console.error("SQLite error:", err.message);
-      res.status(500).send("Database error");
-    } else {
-      res.render("challenge_2023.hbs", { result: rows });
-      console.log(rows);
-    }
-  });
+app.get("/yearly-challenge-2023", (req, res, next) => {
+  try {
+    const rows = db.prepare("SELECT * FROM challenge_2023").all();
+    res.render("challenge_2023.hbs", { result: rows });
+  } catch (err) {
+    console.error("SQLite error:", err.message);
+    next(err);
+  }
 });
 
-app.get("/yearly-challenge-2024", (req, res) => {
-  db.all("SELECT * FROM challenge_2024", (err, rows) => {
-    if (err) {
-      console.error("SQLite error:", err.message);
-      res.status(500).send("Database error");
-    } else {
-      res.render("challenge_2024.hbs", { result: rows });
-      console.log(rows);
-    }
-  });
+app.get("/yearly-challenge-2024", (req, res, next) => {
+  try {
+    const rows = db.prepare("SELECT * FROM challenge_2024").all();
+    res.render("challenge_2024.hbs", { result: rows });
+  } catch (err) {
+    console.error("SQLite error:", err.message);
+    next(err);
+  }
 });
 
-app.get("/yearly-challenge-2025", (req, res) => {
-  db.all("SELECT * FROM challenge_2025", (err, rows) => {
-    if (err) {
-      console.error("SQLite error:", err.message);
-      res.status(500).send("Database error");
-    } else {
-      res.render("challenge_2025.hbs", { result: rows });
-      console.log(rows);
-    }
-  });
+app.get("/yearly-challenge-2025", (req, res, next) => {
+  try {
+    // Order however you want to *display* the list.
+    // If “beaten order” == insert order, id ASC is fine.
+    const rows = db.prepare("SELECT * FROM challenge_2025 ORDER BY id ASC").all();
+
+    // Add a sequential display number (1..N) regardless of id gaps
+    rows.forEach((row, i) => { row.displayNumber = i + 1; });
+
+    res.render("challenge_2025.hbs", { result: rows });
+  } catch (err) {
+    console.error("SQLite error:", err.message);
+    next(err);
+  }
 });
 
-// Route for Kaizo Page
+// -------- Kaizo Page --------
 
-app.get("/kaizo-hacks", (req, res) => {
-  db.all("SELECT * FROM kaizo", (err, rows) => {
-    if (err) {
-      console.error("SQLite error:", err.message);
-      res.status(500).send("Database error");
-    } else {
-      res.render("kaizo.hbs", { result: rows, currentPage: "challenges" });
-      console.log(rows);
-    }
-  });
+app.get("/kaizo-hacks", (req, res, next) => {
+  try {
+    const rows = db.prepare("SELECT * FROM kaizo").all();
+    res.render("kaizo.hbs", { result: rows, currentPage: "challenges" });
+  } catch (err) {
+    console.error("SQLite error:", err.message);
+    next(err);
+  }
 });
 
-
-//Route for About Page
+// -------- About --------
 
 app.get("/about", (req, res) => {
   res.render("about", { currentPage: "about" });
 });
 
-//Route for Challenge Page
+// -------- Challenges summary (counts) --------
 
+app.get("/challenges", (req, res, next) => {
+  try {
+    const row1 = db.prepare("SELECT COUNT(*) as gamesCount FROM challenge_2025").get();
+    const row2 = db.prepare("SELECT COUNT(*) as kaizoCount FROM kaizo").get();
 
-app.get("/challenges", (req, res) => {
-  let gamesCount = 0;
-  let kaizoCount = 0;
+    const gamesCount = row1?.gamesCount ?? 0;
+    const kaizoCount = (row2?.kaizoCount ?? 0) + 24;
 
-  db.get("SELECT COUNT(*) as gamesCount FROM challenge_2025", (err, row1) => {
-    if (err) {
-      console.error("SQLite error (challenge_2025):", err.message);
-      return res.status(500).send("Database error");
-    }
-
-    gamesCount = row1.gamesCount;
-
-    db.get("SELECT COUNT(*) as kaizoCount FROM kaizo", (err, row2) => {
-      if (err) {
-        console.error("SQLite error (kaizo):", err.message);
-        return res.status(500).send("Database error");
-      }
-
-      kaizoCount = row2.kaizoCount + 24;
-
-      res.render("challenges.hbs", {
-        gamesCount,
-        kaizoCount,
-        currentPage: "challenges"
-      });
-
-      console.log("Kaizo Count:", kaizoCount);
+    res.render("challenges.hbs", {
+      gamesCount,
+      kaizoCount,
+      currentPage: "challenges"
     });
-  });
+  } catch (err) {
+    console.error("SQLite error (summary):", err.message);
+    next(err);
+  }
 });
 
-//Backlog route
+// -------- Backlog --------
 
 app.get("/backlog", (req, res) => {
   res.render("backlog", { currentPage: "backlog" });
 });
 
-//Select 5 Games at Random API Route
-
+// Select N Games at Random (API)
 app.get("/api/backlog/random", (req, res) => {
-  const count = parseInt(req.query.count) || 6;
-  const query = "SELECT name FROM backlog ORDER BY RANDOM() LIMIT ?";
-
-  db.all(query, [count], (err, rows) => {
-    if (err) {
-      console.error("SQLite error (backlog):", err.message);
-      return res.status(500).json({ error: "Database error" });
-    }
-
-    const games = rows.map(row => row.name);
+  const countRaw = parseInt(req.query.count, 10);
+  const count = Number.isNaN(countRaw) ? 6 : Math.max(1, Math.min(100, countRaw)); // clamp 1..100
+  try {
+    const rows = db.prepare("SELECT name FROM backlog ORDER BY RANDOM() LIMIT ?").all(count);
+    const games = rows.map(r => r.name);
     res.json(games);
-  });
+  } catch (err) {
+    console.error("SQLite error (backlog/random):", err.message);
+    res.status(500).json({ error: "Database error" });
+  }
 });
 
 app.get("/api/backlog/sample", (req, res) => {
-  const query = `SELECT name FROM backlog ORDER BY RANDOM() LIMIT 100`;
-  db.all(query, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: "DB error" });
-    const games = rows.map(row => row.name);
+  try {
+    const rows = db.prepare("SELECT name FROM backlog ORDER BY RANDOM() LIMIT 100").all();
+    const games = rows.map(r => r.name);
     res.json(games);
-  });
+  } catch (err) {
+    console.error("SQLite error (backlog/sample):", err.message);
+    res.status(500).json({ error: "Database error" });
+  }
 });
 
+// -------- Admin (UI only page) --------
 app.get('/admin', (req, res) => {
   res.render('admin/simple', { title: 'Admin' });
 });
 
-//POST to DB Function
+// -------- Admin save (INSERT) --------
 function clean(s) {
   return (s ?? '').toString().trim();
 }
@@ -226,7 +191,7 @@ app.post('/admin/save', (req, res) => {
   try {
     const name        = clean(req.body.name);
     const image       = clean(req.body.image);
-    const difficulty  = clean(req.body.difficulty); // match your DB spelling
+    const difficulty  = clean(req.body.difficulty);
     const platform    = clean(req.body.platform);
     const description = clean(req.body.description);
     let rating        = parseInt(req.body.rating, 10);
@@ -239,23 +204,17 @@ app.post('/admin/save', (req, res) => {
       return res.status(400).send('Rating must be 1–10. <a href="/admin">Back</a>');
     }
 
-    const stmt = db.prepare(`
+    const info = db.prepare(`
       INSERT INTO challenge_2025 (name, rating, description, image, difficulty, platform)
       VALUES (?, ?, ?, ?, ?, ?)
-    `);
-    const info = stmt.run(name, rating, description, image, difficulty || 'Normal', platform);
+    `).run(name, rating, description, image, difficulty || 'Normal', platform);
 
-    res.status(201).send(
-      `Saved! New id = ${info.lastInsertRowid}. <a href="/admin">Add another</a>`
-    );
+    res.status(201).send(`Saved! New id = ${info.lastInsertRowid}. <a href="/admin">Add another</a>`);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error saving row. <a href="/admin">Back</a>');
   }
 });
 
-
-
-//Listening Port
-
+// Listening Port
 app.listen(PORT, () => console.log(`Server is starting on PORT ${PORT}`));
