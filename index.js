@@ -1,9 +1,10 @@
 const express = require("express");
+const { db } = require('./db');
 const { engine } = require("express-handlebars")
 const path = require("path");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const session = require("express-session");
-const sqlite3 = require('sqlite3').verbose();
+// const sqlite3 = require('sqlite3').verbose();
 const hbs = require("hbs");
 
 const app = express();
@@ -11,13 +12,13 @@ const log = console.log;
 const PORT = process.env.PORT || 3000;
 
 // SQLite DB connection
-const db = new sqlite3.Database('./db.sqlite', sqlite3.OPEN_READONLY, (err) => {
-  if (err) {
-    console.error('Failed to connect to SQLite:', err.message);
-  } else {
-    console.log('✅ Connected to SQLite database');
-  }
-});
+// const db = new sqlite3.Database('./db.sqlite', sqlite3.OPEN_READONLY, (err) => {
+//   if (err) {
+//     console.error('Failed to connect to SQLite:', err.message);
+//   } else {
+//     console.log('✅ Connected to SQLite database');
+//   }
+// });
 
 // View engine setup
 app.engine('hbs', engine({
@@ -40,7 +41,8 @@ app.use("/style", express.static("style"));
 
 // Middleware
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 // Root route
 app.get("/", (req, res) => {
@@ -209,6 +211,47 @@ app.get("/api/backlog/sample", (req, res) => {
     const games = rows.map(row => row.name);
     res.json(games);
   });
+});
+
+app.get('/admin', (req, res) => {
+  res.render('admin/simple', { title: 'Admin' });
+});
+
+//POST to DB Function
+function clean(s) {
+  return (s ?? '').toString().trim();
+}
+
+app.post('/admin/save', (req, res) => {
+  try {
+    const name        = clean(req.body.name);
+    const image       = clean(req.body.image);
+    const difficulty  = clean(req.body.difficulty); // match your DB spelling
+    const platform    = clean(req.body.platform);
+    const description = clean(req.body.description);
+    let rating        = parseInt(req.body.rating, 10);
+
+    if (!name) {
+      return res.status(400).send('Name is required. <a href="/admin">Back</a>');
+    }
+    if (Number.isNaN(rating)) rating = null;
+    if (rating !== null && (rating < 1 || rating > 10)) {
+      return res.status(400).send('Rating must be 1–10. <a href="/admin">Back</a>');
+    }
+
+    const stmt = db.prepare(`
+      INSERT INTO challenge_2025 (name, rating, description, image, difficulty, platform)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+    const info = stmt.run(name, rating, description, image, difficulty || 'Normal', platform);
+
+    res.status(201).send(
+      `Saved! New id = ${info.lastInsertRowid}. <a href="/admin">Add another</a>`
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error saving row. <a href="/admin">Back</a>');
+  }
 });
 
 

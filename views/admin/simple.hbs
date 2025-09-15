@@ -1,0 +1,95 @@
+<div class="admin-wrap">
+  <h1>Admin (UI only)</h1>
+  <p class="muted">Step 1: This page does not save yet. It’s just the form + live preview.</p>
+
+  <div class="grid">
+  <form class="card" id="gameForm" method="POST" action="/admin/save">
+  <h2>Add Game</h2>
+
+  <label>Name
+    <input id="name" name="name" placeholder="e.g., Celeste" required>
+  </label>
+
+  <label>Image URL
+    <input id="image" name="image" placeholder="https://…">
+  </label>
+
+  <div class="two">
+    <label>Difficulty
+      <!-- keep the *exact* column spelling here -->
+      <select id="difficulty" name="difficulty">
+        <option>Easy</option><option selected>Normal</option><option>Hard</option><option>Kaizo</option><option>Ultra</option>
+      </select>
+    </label>
+
+    <label>Rating (1–10)
+      <input id="rating" name="rating" type="number" min="1" max="10" placeholder="8">
+    </label>
+  </div>
+
+  <label>Platform
+    <input id="platform" name="platform" placeholder="PC / Switch / PS5">
+  </label>
+
+  <label>Description
+    <textarea id="description" name="description" rows="4" placeholder="Short blurb…"></textarea>
+  </label>
+
+  <button class="btn" type="submit">Save</button>
+</form>
+    <aside class="card">
+      <h2>Live Preview</h2>
+      <div class="preview">
+        <div class="img" id="pv_img">No image</div>
+        <div class="body">
+          <h3 id="pv_name">Name…</h3>
+          <p class="meta">
+            <span id="pv_difficulty">Normal</span> •
+            <span id="pv_rating">–/10</span> •
+            <span id="pv_platform">Platform?</span>
+          </p>
+          <p id="pv_desc" class="desc">Description will appear here.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<link rel="stylesheet" href="/css/admin.css">
+
+<script>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const f = {
+      name: $('name'),
+      image: $('image'),
+      difficulty: $('difficulty'),
+      rating: $('rating'),
+      platform: $('platform'),
+      description: $('description'),
+    };
+
+    function update() {
+      $('pv_name').textContent = f.name.value.trim() || 'Name…';
+      $('pv_difficulty').textContent = f.difficulty.value;
+      $('pv_rating').textContent = f.rating.value ? (f.rating.value + '/10') : '–/10';
+      $('pv_platform').textContent = f.platform.value.trim() || 'Platform?';
+      $('pv_desc').textContent = f.description.value.trim() || 'Description will appear here.';
+
+      const img = f.image.value.trim();
+      const pvImg = $('pv_img');
+      if (img) {
+        pvImg.style.backgroundImage = `url('${img}')`;
+        pvImg.classList.add('has-img');
+        pvImg.textContent = '';
+      } else {
+        pvImg.style.backgroundImage = 'none';
+        pvImg.classList.remove('has-img');
+        pvImg.textContent = 'No image';
+      }
+    }
+
+    Object.values(f).forEach(el => el.addEventListener('input', update));
+    update();
+  })();
+</script>
