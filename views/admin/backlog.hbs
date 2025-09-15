@@ -1,0 +1,39 @@
+<div class="admin-wrap">
+  <h1>Add Backlog Game</h1>
+  <p class="muted">This adds a single name into the <code>backlog</code> table.</p>
+
+  <div class="grid">
+    <form class="card" method="POST" action="/admin/backlog/save">
+      <label>Game Name
+        <input name="name" id="bl_name" placeholder="e.g., Hollow Knight" required>
+      </label>
+
+      <button class="btn" type="submit">Save to Backlog</button>
+    </form>
+
+    <aside class="card">
+      <h2>Preview</h2>
+      <div class="preview">
+        <div class="body" style="padding:12px">
+          <h3 id="pv_bl_name">Game name…</h3>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<link rel="stylesheet" href="/css/admin.css">
+
+<script>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const nameInput = $('bl_name');
+    const pv = $('pv_bl_name');
+
+    function update() {
+      pv.textContent = nameInput.value.trim() || 'Game name…';
+    }
+    nameInput.addEventListener('input', update);
+    update();
+  })();
+</script>

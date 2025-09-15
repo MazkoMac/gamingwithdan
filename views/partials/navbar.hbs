@@ -9,8 +9,8 @@
     <li>
       <a href="/challenges" class="{{#if (eq currentPage 'challenges')}}active{{/if}}">Challenges</a>
     </li>
-    <li><a href="/yearly-challenge-2025">52 GAMES</a></li>
-    <li><a href="/kaizo-hacks">KAIZO</a></li>
+    <li><a href="/yearly-challenge-2025" class="{{#if (eq currentPage 'yearly-challenge')}}active{{/if}}">52 GAMES</a></li>
+    <li><a href="/kaizo-hacks" class="{{#if (eq currentPage 'kaizo-hacks')}}active{{/if}}">KAIZO</a></li>
     <li>
       <a href="/backlog" class="{{#if (eq currentPage 'backlog')}}active{{/if}}">Backlog</a>
     </li>
@@ -19,3 +19,19 @@
     </li>
   </ul>
 </nav>
+
+<script>
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('.navbar');
+  if (window.scrollY > 10) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+});
+
+  // mobile menu toggle for the hamburger
+  window.toggleMenu = function () {
+    const panel = document.getElementById('navbarLinks');
+    const btn = document.querySelector('.navbar__toggle');
+    const open = panel.classList.toggle('is-open');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+</script>

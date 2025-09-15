@@ -36,7 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Root route
 app.get("/", (req, res) => {
-  res.render("index.hbs");
+  res.render("index.hbs", { title: "Home" });
 });
 
 // -------- Challenge Pages (read-only) --------
@@ -44,7 +44,7 @@ app.get("/", (req, res) => {
 app.get("/yearly-challenge-2020", (req, res, next) => {
   try {
     const rows = db.prepare("SELECT * FROM challenge").all();
-    res.render("challenge.hbs", { result: rows });
+    res.render("challenge.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2020, title: "2020 Challenge" });
   } catch (err) {
     console.error("SQLite error:", err.message);
     next(err);
@@ -54,7 +54,7 @@ app.get("/yearly-challenge-2020", (req, res, next) => {
 app.get("/yearly-challenge-2021", (req, res, next) => {
   try {
     const rows = db.prepare("SELECT * FROM challenge_2021").all();
-    res.render("challenge_2021.hbs", { result: rows });
+    res.render("challenge_2021.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2021, title: "2021 Challenge"  });
   } catch (err) {
     console.error("SQLite error:", err.message);
     next(err);
@@ -64,7 +64,7 @@ app.get("/yearly-challenge-2021", (req, res, next) => {
 app.get("/yearly-challenge-2022", (req, res, next) => {
   try {
     const rows = db.prepare("SELECT * FROM challenge_2022").all();
-    res.render("challenge_2022.hbs", { result: rows });
+    res.render("challenge_2022.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2022, title: "2022 Challenge"  });
   } catch (err) {
     console.error("SQLite error:", err.message);
     next(err);
@@ -74,7 +74,7 @@ app.get("/yearly-challenge-2022", (req, res, next) => {
 app.get("/yearly-challenge-2023", (req, res, next) => {
   try {
     const rows = db.prepare("SELECT * FROM challenge_2023").all();
-    res.render("challenge_2023.hbs", { result: rows });
+    res.render("challenge_2023.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2023, title: "2023 Challenge"  });
   } catch (err) {
     console.error("SQLite error:", err.message);
     next(err);
@@ -84,7 +84,7 @@ app.get("/yearly-challenge-2023", (req, res, next) => {
 app.get("/yearly-challenge-2024", (req, res, next) => {
   try {
     const rows = db.prepare("SELECT * FROM challenge_2024").all();
-    res.render("challenge_2024.hbs", { result: rows });
+    res.render("challenge_2024.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2024, title: "2024 Challenge"  });
   } catch (err) {
     console.error("SQLite error:", err.message);
     next(err);
@@ -100,7 +100,7 @@ app.get("/yearly-challenge-2025", (req, res, next) => {
     // Add a sequential display number (1..N) regardless of id gaps
     rows.forEach((row, i) => { row.displayNumber = i + 1; });
 
-    res.render("challenge_2025.hbs", { result: rows });
+    res.render("challenge_2025.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2025, title: "2025 Challenge"  });
   } catch (err) {
     console.error("SQLite error:", err.message);
     next(err);
@@ -112,7 +112,7 @@ app.get("/yearly-challenge-2025", (req, res, next) => {
 app.get("/kaizo-hacks", (req, res, next) => {
   try {
     const rows = db.prepare("SELECT * FROM kaizo").all();
-    res.render("kaizo.hbs", { result: rows, currentPage: "challenges" });
+    res.render("kaizo.hbs", { result: rows, currentPage: "kaizo-hacks", title: "Kaizo" });
   } catch (err) {
     console.error("SQLite error:", err.message);
     next(err);
@@ -122,7 +122,7 @@ app.get("/kaizo-hacks", (req, res, next) => {
 // -------- About --------
 
 app.get("/about", (req, res) => {
-  res.render("about", { currentPage: "about" });
+  res.render("about", { currentPage: "about", title: "About" });
 });
 
 // -------- Challenges summary (counts) --------
@@ -138,7 +138,8 @@ app.get("/challenges", (req, res, next) => {
     res.render("challenges.hbs", {
       gamesCount,
       kaizoCount,
-      currentPage: "challenges"
+      currentPage: "challenges",
+      title: "Challenges"
     });
   } catch (err) {
     console.error("SQLite error (summary):", err.message);
@@ -149,7 +150,7 @@ app.get("/challenges", (req, res, next) => {
 // -------- Backlog --------
 
 app.get("/backlog", (req, res) => {
-  res.render("backlog", { currentPage: "backlog" });
+  res.render("backlog", { currentPage: "backlog", title: "Backlog" });
 });
 
 // Select N Games at Random (API)
@@ -176,6 +177,8 @@ app.get("/api/backlog/sample", (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+
+//------------ADMIN PAGES-------------
 
 // -------- Admin (UI only page) --------
 app.get('/admin', (req, res) => {
@@ -213,6 +216,32 @@ app.post('/admin/save', (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Error saving row. <a href="/admin">Back</a>');
+  }
+});
+
+// --- Admin: Backlog (UI) ---
+app.get('/admin/backlog', (req, res) => {
+  res.render('admin/backlog', { title: 'Add Backlog Game' });
+});
+
+// --- Admin: Backlog (INSERT) ---
+app.post('/admin/backlog/save', (req, res) => {
+  try {
+    const clean = (s) => (s ?? '').toString().trim();
+    const name = clean(req.body.name);
+
+    if (!name) {
+      return res.status(400).send('Name is required. <a href="/admin/backlog">Back</a>');
+    }
+
+    const info = db.prepare('INSERT INTO backlog (name) VALUES (?)').run(name);
+
+    res
+      .status(201)
+      .send(`Saved to backlog! New id = ${info.lastInsertRowid}. <a href="/admin/backlog">Add another</a>`);
+  } catch (err) {
+    console.error('Backlog insert error:', err);
+    res.status(500).send('Error saving backlog entry. <a href="/admin/backlog">Back</a>');
   }
 });
 

@@ -4,14 +4,14 @@
   <section class="challenge-intro">
     <h1 class="challenge-title">52 Games In {{year}}</h1>
 
-    <div class="challenge-year-links">
-      <a href="/yearly-challenge-2020">2020</a>
-      <a href="/yearly-challenge-2021">2021</a>
-      <a href="/yearly-challenge-2022">2022</a>
-      <a href="/yearly-challenge-2023">2023</a>
-      <a href="/yearly-challenge-2024">2024</a>
-      <a href="/yearly-challenge-2025">2025</a>
-    </div>
+  <div class="challenge-year-links">
+  <a href="/yearly-challenge-2020" class="{{#if (eq activeYear 2020)}}active{{/if}}">2020</a>
+  <a href="/yearly-challenge-2021" class="{{#if (eq activeYear 2021)}}active{{/if}}">2021</a>
+  <a href="/yearly-challenge-2022" class="{{#if (eq activeYear 2022)}}active{{/if}}">2022</a>
+  <a href="/yearly-challenge-2023" class="{{#if (eq activeYear 2023)}}active{{/if}}">2023</a>
+  <a href="/yearly-challenge-2024" class="{{#if (eq activeYear 2024)}}active{{/if}}">2024</a>
+  <a href="/yearly-challenge-2025" class="{{#if (eq activeYear 2025)}}active{{/if}}">2025</a>
+</div>
 
     <button class="challenge-modal-btn" onclick="openModal()">The Challenge</button>
 
