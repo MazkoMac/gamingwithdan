@@ -228,14 +228,22 @@ app.get('/admin/backlog', (req, res) => {
 app.post('/admin/backlog/save', (req, res) => {
   try {
     const clean = (s) => (s ?? '').toString().trim();
-    const name = clean(req.body.name);
+    // Optional: collapse inner whitespace so "Super   Mario" == "Super Mario"
+    const normalize = (s) => s.replace(/\s+/g, ' ');
 
+    let name = clean(req.body.name);
     if (!name) {
       return res.status(400).send('Name is required. <a href="/admin/backlog">Back</a>');
     }
+    name = normalize(name);
+
+    // 🔍 dup check (case-insensitive)
+    const dup = db.prepare('SELECT id FROM backlog WHERE name = ? COLLATE NOCASE').get(name);
+    if (dup) {
+      return res.status(409).send('Game already in backlog. <a href="/admin/backlog">Back</a>');
+    }
 
     const info = db.prepare('INSERT INTO backlog (name) VALUES (?)').run(name);
-
     res
       .status(201)
       .send(`Saved to backlog! New id = ${info.lastInsertRowid}. <a href="/admin/backlog">Add another</a>`);
