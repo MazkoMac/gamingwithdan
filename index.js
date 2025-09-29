@@ -11,6 +11,8 @@ const app = express();
 const log = console.log;
 const PORT = process.env.PORT || 3000;
 
+const crypto = require('crypto');
+
 // View engine setup
 app.engine('hbs', engine({
   extname: 'hbs',
@@ -33,6 +35,42 @@ app.use("/style", express.static("style"));
 app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended: true }));
+
+
+// Read creds from env (set these below)
+const ADMIN_USER = process.env.ADMIN_USER || 'mazkomac';
+const ADMIN_PASS = process.env.ADMIN_PASS || 'Danisafly1!';
+
+// constant-time string compare
+function safeEq(a, b) {
+  const ab = Buffer.from(a || '');
+  const bb = Buffer.from(b || '');
+  return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
+}
+
+// Protect /admin routes (all of them)
+function requireBasicAuth(req, res, next) {
+  if (!req.path.startsWith('/admin')) return next();
+
+  const header = req.headers.authorization || '';
+  const [type, creds] = header.split(' ');
+  if (type !== 'Basic' || !creds) {
+    res.set('WWW-Authenticate', 'Basic realm="GamingWithDan Admin"');
+    return res.status(401).send('Authentication required');
+  }
+
+  const [user, pass] = Buffer.from(creds, 'base64').toString().split(':');
+
+  if (safeEq(user, ADMIN_USER) && safeEq(pass, ADMIN_PASS)) {
+    return next();
+  }
+
+  res.set('WWW-Authenticate', 'Basic realm="GamingWithDan Admin"');
+  return res.status(401).send('Access denied');
+}
+
+app.use(requireBasicAuth);
+
 
 // Root route
 app.get("/", (req, res) => {
