@@ -8,3 +8,4 @@ node_modules/
 # Ignore SQLite database and export tables
 db.sqlite
 tables/
+backlog.csv
