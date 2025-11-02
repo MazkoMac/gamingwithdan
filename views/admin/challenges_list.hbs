@@ -1,0 +1,62 @@
+<link rel="stylesheet" href="/style/css/admin.css">
+
+<div class="admin-wrap">
+  <h1>Challenges – {{year}}</h1>
+  <div style="text-align:center; margin-bottom:1.5rem;">
+  <a href="/admin" class="btn">← Back to Main Admin</a>
+</div>
+  <p class="muted">
+    Editing table: <code>{{table}}</code>.
+    {{#if legacy}}(legacy table – no difficulty/platform){{/if}}
+  </p>
+
+  <div class="card">
+    {{#if items.length}}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:4rem;">ID</th>
+            <th style="width:14rem;">Name</th>
+            <th style="width:5rem;">Rating</th>
+            <th>Image</th>
+            {{#unless legacy}}<th style="width:7rem;">Difficulty</th>{{/unless}}
+            {{#unless legacy}}<th style="width:7rem;">Platform</th>{{/unless}}
+            <th style="width:7rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each items}}
+            <tr>
+              <td>{{this.id}}</td>
+              <td>{{this.name}}</td>
+              <td>{{this.rating}}</td>
+              <td>
+                {{#if this.image}}
+                  <a href="{{this.image}}" target="_blank" rel="noreferrer">image</a>
+                {{else}}
+                  <span class="muted">none</span>
+                {{/if}}
+              </td>
+              {{#unless ../legacy}}
+                <td>{{this.difficulty}}</td>
+                <td>{{this.platform}}</td>
+              {{/unless}}
+              <td>
+                <a class="btn btn-small" href="/admin/challenges/{{../year}}/edit/{{this.id}}">Edit</a>
+                <form method="POST" action="/admin/challenges/{{../year}}/delete/{{this.id}}" style="display:inline;" onsubmit="return confirm('Delete {{this.name}}?');">
+                  <button type="submit" class="btn btn-danger btn-small">Del</button>
+                </form>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{else}}
+      <p class="muted">No entries found for this year.</p>
+    {{/if}}
+  </div>
+
+  <p style="margin-top:1rem;">
+    <a href="/admin/challenges" class="btn">← Back to years</a>
+  </p>
+</div>

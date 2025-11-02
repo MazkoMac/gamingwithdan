@@ -1,0 +1,43 @@
+{{> navbar}}
+
+<link rel="stylesheet" href="/style/css/admin.css">
+
+<div class="admin-wrap">
+  <h1>Edit Challenge ({{year}})</h1>
+  <p class="muted">
+    Editing entry <code>#{{item.id}}</code> in table <code>{{table}}</code>.
+  </p>
+
+  <form class="card" method="POST" action="/admin/challenges/{{year}}/edit/{{item.id}}">
+    <label for="name">Name</label>
+    <input id="name" name="name" value="{{item.name}}" required>
+
+    <label for="rating">Rating</label>
+    <input id="rating" name="rating" value="{{item.rating}}" placeholder="e.g. 7.5">
+
+    <label for="image">Image URL</label>
+    <input id="image" name="image" value="{{item.image}}" placeholder="https://...">
+
+    {{#unless legacy}}
+      <label for="difficulty">Difficulty</label>
+      <input id="difficulty" name="difficulty" value="{{item.difficulty}}" placeholder="Normal / Hard / N/A">
+
+      <label for="platform">Platform</label>
+      <input id="platform" name="platform" value="{{item.platform}}" placeholder="PC / Switch / PS5">
+    {{/unless}}
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="6" style="min-height:140px;">{{item.description}}</textarea>
+
+    <button type="submit" class="btn btn-primary" style="margin-top:1rem;">Save Changes</button>
+    <a href="/admin/challenges/{{year}}" class="btn" style="margin-top:1rem;">Cancel</a>
+  </form>
+
+  {{#if item.image}}
+    <div class="card" style="margin-top:1rem;">
+      <h2>Current Image</h2>
+      <p class="muted">This is the URL you're about to fix.</p>
+      <img src="{{item.image}}" alt="Preview" style="max-width:320px; border-radius:8px;">
+    </div>
+  {{/if}}
+</div>

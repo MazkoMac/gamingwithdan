@@ -1,99 +1,77 @@
+<link rel="stylesheet" href="/style/css/admin.css">
+
 <div class="admin-wrap">
-  <h1>Admin (UI only)</h1>
-  <p class="muted">Step 1: This page does not save yet. It’s just the form + live preview.</p>
+  <h1 class="page-title">Admin Dashboard</h1>
 
-  <div class="grid">
-  <form class="card" id="gameForm" method="POST" action="/admin/save">
-  <h2>Add Game</h2>
-
-  <label>Name
-    <input id="name" name="name" placeholder="e.g., Celeste" required>
-  </label>
-
-  <label>Image URL
-    <input id="image" name="image" placeholder="https://…">
-  </label>
-
-  <div class="two">
-    <label>Difficulty
-      <!-- keep the *exact* column spelling here -->
-      <select id="difficulty" name="difficulty">
-        <option>N/A</option><option>Easy</option><option selected>Normal</option><option>Hard</option><option>Kaizo</option><option>Ultra</option>
-      </select>
-    </label>
-
-    <label>Rating (1–10)
-      <input id="rating" name="rating" type="number" min="1" max="10" placeholder="8">
-    </label>
+  {{!-- ADMIN NAVIGATION BUTTONS --}}
+  <div class="admin-nav" style="text-align:center; margin-bottom:2rem;">
+    <a href="/admin/challenges" class="btn btn-primary" style="margin:0 0.5rem;">Manage Challenges</a>
+    <a href="/admin/backlog" class="btn btn-primary" style="margin:0 0.5rem;">Manage Backlog</a>
+    <a href="/admin" class="btn btn-primary" style="margin:0 0.5rem;">Add Challenge (2025)</a>
+    <a href="/" class="btn" style="margin:0 0.5rem;">← Back to Site</a>
   </div>
 
-  <label>Platform
-    <input id="platform" name="platform" placeholder="PC / Switch / PS5">
-  </label>
+  <p class="muted" style="text-align:center;">
+    Use the buttons above to navigate between admin features.  
+    Below you can add new challenge entries for <strong>2025</strong>.
+  </p>
 
-  <label>Description
-    <textarea id="description" name="description" rows="4" placeholder="Short blurb…"></textarea>
-  </label>
+  {{!-- EXISTING ADD CHALLENGE FORM --}}
+  <div class="grid">
+    <form class="card" method="POST" action="/admin/save">
+      <label>Game Name
+        <input name="name" id="name" placeholder="e.g., Elden Ring" required>
+      </label>
 
-  <button class="btn" type="submit">Save</button>
-</form>
+      <label>Rating
+        <input name="rating" id="rating" placeholder="8.5">
+      </label>
+
+      <label>Description
+        <textarea name="description" id="description" placeholder="Short notes about the game" rows="4"></textarea>
+      </label>
+
+      <label>Image URL
+        <input name="image" id="image" placeholder="https://...">
+      </label>
+
+      <label>Difficulty
+        <input name="difficulty" id="difficulty" placeholder="Normal / Hard / etc.">
+      </label>
+
+      <label>Platform
+        <input name="platform" id="platform" placeholder="PC / Switch / etc.">
+      </label>
+
+      <button class="btn btn-primary" type="submit">Add Game</button>
+    </form>
+
     <aside class="card">
-      <h2>Live Preview</h2>
+      <h2>Preview</h2>
       <div class="preview">
-        <div class="img" id="pv_img">No image</div>
-        <div class="body">
-          <h3 id="pv_name">Name…</h3>
-          <p class="meta">
-            <span id="pv_difficulty">Normal</span> •
-            <span id="pv_rating">–/10</span> •
-            <span id="pv_platform">Platform?</span>
-          </p>
-          <p id="pv_desc" class="desc">Description will appear here.</p>
-        </div>
+        <p id="pv_name">Game name…</p>
+        <p class="muted" id="pv_rating">Rating: —</p>
       </div>
     </aside>
   </div>
 </div>
 
-<p class="muted">
-  Also: <a href="/admin/backlog">Add Backlog Game</a>
-</p>
-
-<link rel="stylesheet" href="/css/admin.css">
-
 <script>
   (function () {
-    const $ = (id) => document.getElementById(id);
-    const f = {
-      name: $('name'),
-      image: $('image'),
-      difficulty: $('difficulty'),
-      rating: $('rating'),
-      platform: $('platform'),
-      description: $('description'),
-    };
+    const name = document.getElementById('name');
+    const rating = document.getElementById('rating');
+    const pvName = document.getElementById('pv_name');
+    const pvRating = document.getElementById('pv_rating');
 
-    function update() {
-      $('pv_name').textContent = f.name.value.trim() || 'Name…';
-      $('pv_difficulty').textContent = f.difficulty.value;
-      $('pv_rating').textContent = f.rating.value ? (f.rating.value + '/10') : '–/10';
-      $('pv_platform').textContent = f.platform.value.trim() || 'Platform?';
-      $('pv_desc').textContent = f.description.value.trim() || 'Description will appear here.';
-
-      const img = f.image.value.trim();
-      const pvImg = $('pv_img');
-      if (img) {
-        pvImg.style.backgroundImage = `url('${img}')`;
-        pvImg.classList.add('has-img');
-        pvImg.textContent = '';
-      } else {
-        pvImg.style.backgroundImage = 'none';
-        pvImg.classList.remove('has-img');
-        pvImg.textContent = 'No image';
-      }
+    function updatePreview() {
+      pvName.textContent = name.value.trim() || 'Game name…';
+      pvRating.textContent = rating.value.trim()
+        ? 'Rating: ' + rating.value.trim()
+        : 'Rating: —';
     }
 
-    Object.values(f).forEach(el => el.addEventListener('input', update));
-    update();
+    name.addEventListener('input', updatePreview);
+    rating.addEventListener('input', updatePreview);
+    updatePreview();
   })();
 </script>

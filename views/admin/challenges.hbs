@@ -1,0 +1,21 @@
+<link rel="stylesheet" href="/style/css/admin.css">
+
+<div class="admin-wrap">
+  <h1>Manage Challenge Entries</h1>
+  <div style="text-align:center; margin-bottom:1.5rem;">
+  <a href="/admin" class="btn">← Back to Main Admin</a>
+</div>
+  <p class="muted">Choose a year/table to view and edit its entries.</p>
+
+  <div class="card">
+    <ul class="admin-list">
+      {{#each tables}}
+        <li>
+          <a href="/admin/challenges/{{this.year}}">
+            {{this.label}} ({{this.table}})
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</div>

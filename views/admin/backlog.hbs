@@ -1,39 +1,90 @@
+<link rel="stylesheet" href="/style/css/admin.css">
+
 <div class="admin-wrap">
-  <h1>Add Backlog Game</h1>
-  <p class="muted">This adds a single name into the <code>backlog</code> table.</p>
+  <h1 class="page-title">Manage Backlog</h1>
 
-  <div class="grid">
-    <form class="card" method="POST" action="/admin/backlog/save">
-      <label>Game Name
-        <input name="name" id="bl_name" placeholder="e.g., Hollow Knight" required>
-      </label>
-
-      <button class="btn" type="submit">Save to Backlog</button>
-    </form>
-
-    <aside class="card">
-      <h2>Preview</h2>
-      <div class="preview">
-        <div class="body" style="padding:12px">
-          <h3 id="pv_bl_name">Game name…</h3>
-        </div>
-      </div>
-    </aside>
-  </div>
+  <div style="text-align:center; margin-bottom:1.5rem;">
+  <a href="/admin" class="btn">← Back to Main Admin</a>
 </div>
 
-<link rel="stylesheet" href="/css/admin.css">
+  <p class="muted">
+    Add or remove games from your backlog.  
+    (These changes will update the <code>backlog</code> table in your SQLite database.)
+  </p>
+
+  <section class="admin-grid">
+    {{!-- ADD FORM --}}
+    <form class="card add-form" method="POST" action="/admin/backlog/save">
+      <h2>Add New Game</h2>
+
+      <label for="bl_name">Game Name</label>
+      <input 
+        type="text" 
+        id="bl_name" 
+        name="name" 
+        placeholder="e.g., Hollow Knight" 
+        required
+      >
+
+      <button type="submit" class="btn btn-primary">Add to Backlog</button>
+    </form>
+
+    {{!-- LIVE PREVIEW --}}
+    <aside class="card preview-card">
+      <h2>Preview</h2>
+      <p id="pv_bl_name" class="preview-text">Game name…</p>
+    </aside>
+  </section>
+
+  {{!-- EXISTING BACKLOG --}}
+  <section class="card backlog-list">
+    <h2>Current Backlog ({{items.length}})</h2>
+
+    {{#if items.length}}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width: 5rem;">ID</th>
+            <th>Game Title</th>
+            <th style="width: 8rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each items}}
+            <tr>
+              <td>{{this.id}}</td>
+              <td>{{this.name}}</td>
+              <td>
+                <form 
+                  method="POST" 
+                  action="/admin/backlog/delete" 
+                  onsubmit="return confirm('Remove {{this.name}} from backlog?');"
+                >
+                  <input type="hidden" name="id" value="{{this.id}}">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{else}}
+      <p class="muted">Your backlog is currently empty.</p>
+    {{/if}}
+  </section>
+</div>
 
 <script>
   (function () {
-    const $ = (id) => document.getElementById(id);
-    const nameInput = $('bl_name');
-    const pv = $('pv_bl_name');
+    const nameInput = document.getElementById('bl_name');
+    const preview = document.getElementById('pv_bl_name');
 
-    function update() {
-      pv.textContent = nameInput.value.trim() || 'Game name…';
+    function updatePreview() {
+      const text = nameInput.value.trim();
+      preview.textContent = text || 'Game name…';
     }
-    nameInput.addEventListener('input', update);
-    update();
+
+    nameInput.addEventListener('input', updatePreview);
+    updatePreview();
   })();
 </script>

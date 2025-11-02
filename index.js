@@ -259,7 +259,14 @@ app.post('/admin/save', (req, res) => {
 
 // --- Admin: Backlog (UI) ---
 app.get('/admin/backlog', (req, res) => {
-  res.render('admin/backlog', { title: 'Add Backlog Game' });
+  const rows = db
+    .prepare('SELECT id, name FROM backlog ORDER BY name COLLATE NOCASE')
+    .all();
+
+  res.render('admin/backlog', {
+    title: 'Manage Backlog',
+    items: rows
+  });
 });
 
 // --- Admin: Backlog (INSERT) ---
@@ -290,6 +297,198 @@ app.post('/admin/backlog/save', (req, res) => {
     res.status(500).send('Error saving backlog entry. <a href="/admin/backlog">Back</a>');
   }
 });
+
+// ---Admin : Backlog (DELETE) ---
+
+app.post('/admin/backlog/delete', (req, res) => {
+  try {
+    const id = parseInt(req.body.id, 10);
+    if (!id) {
+      return res.status(400).send('ID is required. <a href="/admin/backlog">Back</a>');
+    }
+
+    const info = db.prepare('DELETE FROM backlog WHERE id = ?').run(id);
+    if (info.changes === 0) {
+      return res.status(404).send('No such backlog entry. <a href="/admin/backlog">Back</a>');
+    }
+
+    // go back to the list
+    res.redirect('/admin/backlog');
+  } catch (err) {
+    console.error('Backlog delete error:', err);
+    res.status(500).send('Error deleting backlog entry. <a href="/admin/backlog">Back</a>');
+  }
+});
+
+// ---------------------------------------------------
+// Admin: Manage challenge tables (2021-2025 + legacy)
+// ---------------------------------------------------
+
+// helper: map "2025" -> "challenge_2025", "2000" or "legacy" -> "challenge"
+function getChallengeTableFromParam(yearParam) {
+  // legacy / original table
+  if (yearParam === '2000' || yearParam === 'legacy') {
+    return { table: 'challenge', yearLabel: '2000 / Legacy', legacy: true };
+  }
+
+  const candidate = `challenge_${yearParam}`;
+  // make sure the table actually exists
+  const row = db
+    .prepare(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name = ?"
+    )
+    .get(candidate);
+
+  if (!row) return null;
+
+  return { table: candidate, yearLabel: yearParam, legacy: false };
+}
+
+// list all challenge tables
+app.get('/admin/challenges', (req, res) => {
+  // pull real tables from DB so this stays future-proof
+  const rows = db
+    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'challenge%' ORDER BY name")
+    .all();
+
+  // map to something nicer for the view
+  const tables = rows.map((r) => {
+    if (r.name === 'challenge') {
+      return { year: '2000', table: r.name, label: '2000 / Legacy' };
+    }
+    // r.name = "challenge_2024" -> "2024"
+    const year = r.name.replace('challenge_', '');
+    return { year, table: r.name, label: year };
+  });
+
+  res.render('admin/challenges', {
+    title: 'Manage Challenge Entries',
+    tables,
+  });
+});
+
+// list entries for a given year
+app.get('/admin/challenges/:year', (req, res) => {
+  const info = getChallengeTableFromParam(req.params.year);
+  if (!info) {
+    return res.status(404).send('Unknown challenge year/table. <a href="/admin/challenges">Back</a>');
+  }
+
+  const rows = db
+    .prepare(`SELECT * FROM ${info.table} ORDER BY id DESC`)
+    .all();
+
+  res.render('admin/challenges_list', {
+    title: `Manage ${info.yearLabel} Challenges`,
+    year: req.params.year,
+    table: info.table,
+    legacy: info.legacy,
+    items: rows,
+  });
+});
+
+// show edit form for a single entry
+app.get('/admin/challenges/:year/edit/:id', (req, res) => {
+  const info = getChallengeTableFromParam(req.params.year);
+  if (!info) {
+    return res.status(404).send('Unknown challenge year/table. <a href="/admin/challenges">Back</a>');
+  }
+
+  const item = db
+    .prepare(`SELECT * FROM ${info.table} WHERE id = ?`)
+    .get(req.params.id);
+
+  if (!item) {
+    return res.status(404).send('Entry not found. <a href="/admin/challenges">Back</a>');
+  }
+
+  res.render('admin/challenge_edit', {
+    title: `Edit Challenge (${info.yearLabel})`,
+    year: req.params.year,
+    table: info.table,
+    legacy: info.legacy,
+    item,
+  });
+});
+
+// process edit submit
+app.post('/admin/challenges/:year/edit/:id', (req, res) => {
+  const info = getChallengeTableFromParam(req.params.year);
+  if (!info) {
+    return res.status(404).send('Unknown challenge year/table. <a href="/admin/challenges">Back</a>');
+  }
+
+  const id = parseInt(req.params.id, 10);
+  if (!id) {
+    return res.status(400).send('Bad ID. <a href="/admin/challenges">Back</a>');
+  }
+
+  // clean inputs
+  const clean = (v) => (v ?? '').toString().trim();
+  const name = clean(req.body.name);
+  const description = clean(req.body.description);
+  const image = clean(req.body.image);
+  const rating = clean(req.body.rating);
+  const difficulty = clean(req.body.difficulty);
+  const platform = clean(req.body.platform);
+
+  if (!name) {
+    return res.status(400).send('Name is required. <a href="javascript:history.back()">Back</a>');
+  }
+
+  try {
+    if (info.legacy) {
+      // original `challenge` table (no difficulty/platform)
+      db.prepare(
+        `UPDATE ${info.table}
+         SET name = ?, rating = ?, description = ?, image = ?
+         WHERE id = ?`
+      ).run(name, rating || null, description || null, image || null, id);
+    } else {
+      // 2021+ tables
+      db.prepare(
+        `UPDATE ${info.table}
+         SET name = ?, rating = ?, description = ?, image = ?, difficulty = ?, platform = ?
+         WHERE id = ?`
+      ).run(
+        name,
+        rating || null,
+        description || null,
+        image || null,
+        difficulty || null,
+        platform || null,
+        id
+      );
+    }
+
+    // back to list for that year
+    res.redirect(`/admin/challenges/${req.params.year}`);
+  } catch (err) {
+    console.error('Challenge update error:', err);
+    res.status(500).send('Error updating challenge. <a href="/admin/challenges">Back</a>');
+  }
+});
+
+// optional: delete
+app.post('/admin/challenges/:year/delete/:id', (req, res) => {
+  const info = getChallengeTableFromParam(req.params.year);
+  if (!info) {
+    return res.status(404).send('Unknown challenge year/table. <a href="/admin/challenges">Back</a>');
+  }
+
+  const id = parseInt(req.params.id, 10);
+  if (!id) {
+    return res.status(400).send('Bad ID. <a href="/admin/challenges">Back</a>');
+  }
+
+  const result = db.prepare(`DELETE FROM ${info.table} WHERE id = ?`).run(id);
+  if (result.changes === 0) {
+    return res.status(404).send('Nothing deleted. <a href="/admin/challenges">Back</a>');
+  }
+
+  res.redirect(`/admin/challenges/${req.params.year}`);
+});
+
 
 // Listening Port
 app.listen(PORT, () => console.log(`Server is starting on PORT ${PORT}`));
