@@ -12,12 +12,12 @@
   </div>
 
   <p class="muted" style="text-align:center;">
-    Use the buttons above to navigate between admin features.  
+    Use the buttons above to navigate between admin features.
     Below you can add new challenge entries for <strong>2025</strong>.
   </p>
 
-  {{!-- EXISTING ADD CHALLENGE FORM --}}
   <div class="grid">
+    {{!-- FORM --}}
     <form class="card" method="POST" action="/admin/save">
       <label>Game Name
         <input name="name" id="name" placeholder="e.g., Elden Ring" required>
@@ -46,11 +46,22 @@
       <button class="btn btn-primary" type="submit">Add Game</button>
     </form>
 
+    {{!-- PREVIEW --}}
     <aside class="card">
       <h2>Preview</h2>
-      <div class="preview">
-        <p id="pv_name">Game name…</p>
+      <div class="preview" style="display:flex; flex-direction:column; gap:0.5rem;">
+        <p id="pv_name" style="font-weight:700; font-size:1.1rem;">Game name…</p>
         <p class="muted" id="pv_rating">Rating: —</p>
+
+        <img id="pv_image"
+             src=""
+             alt="Game cover preview"
+             style="max-width:100%; border-radius:8px; display:none; margin-bottom:0.5rem;">
+
+        <p id="pv_description" style="font-size:0.9rem; line-height:1.4; color:#555;">Description will appear here…</p>
+
+        <p id="pv_platform" class="muted">Platform: —</p>
+        <p id="pv_difficulty" class="muted">Difficulty: —</p>
       </div>
     </aside>
   </div>
@@ -58,20 +69,51 @@
 
 <script>
   (function () {
-    const name = document.getElementById('name');
-    const rating = document.getElementById('rating');
+    const nameEl = document.getElementById('name');
+    const ratingEl = document.getElementById('rating');
+    const descEl = document.getElementById('description');
+    const imageEl = document.getElementById('image');
+    const difficultyEl = document.getElementById('difficulty');
+    const platformEl = document.getElementById('platform');
+
     const pvName = document.getElementById('pv_name');
     const pvRating = document.getElementById('pv_rating');
+    const pvDesc = document.getElementById('pv_description');
+    const pvImg = document.getElementById('pv_image');
+    const pvPlatform = document.getElementById('pv_platform');
+    const pvDifficulty = document.getElementById('pv_difficulty');
 
     function updatePreview() {
-      pvName.textContent = name.value.trim() || 'Game name…';
-      pvRating.textContent = rating.value.trim()
-        ? 'Rating: ' + rating.value.trim()
-        : 'Rating: —';
+      const nameVal = nameEl.value.trim();
+      const ratingVal = ratingEl.value.trim();
+      const descVal = descEl.value.trim();
+      const imgVal = imageEl.value.trim();
+      const diffVal = difficultyEl.value.trim();
+      const platVal = platformEl.value.trim();
+
+      pvName.textContent = nameVal || 'Game name…';
+      pvRating.textContent = ratingVal ? ('Rating: ' + ratingVal) : 'Rating: —';
+      pvDesc.textContent = descVal || 'Description will appear here…';
+      pvPlatform.textContent = 'Platform: ' + (platVal || '—');
+      pvDifficulty.textContent = 'Difficulty: ' + (diffVal || '—');
+
+      if (imgVal) {
+        pvImg.src = imgVal;
+        pvImg.style.display = 'block';
+      } else {
+        pvImg.src = '';
+        pvImg.style.display = 'none';
+      }
     }
 
-    name.addEventListener('input', updatePreview);
-    rating.addEventListener('input', updatePreview);
+    nameEl.addEventListener('input', updatePreview);
+    ratingEl.addEventListener('input', updatePreview);
+    descEl.addEventListener('input', updatePreview);
+    imageEl.addEventListener('input', updatePreview);
+    difficultyEl.addEventListener('input', updatePreview);
+    platformEl.addEventListener('input', updatePreview);
+
+    // initial render
     updatePreview();
   })();
 </script>
