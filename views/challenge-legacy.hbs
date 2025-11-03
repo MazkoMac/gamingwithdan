@@ -33,16 +33,12 @@
   <section class="challenge-list">
     {{#each result}}
     <div class="challenge-entry">
-      <h2 class="challenge-entry-title">{{displayNumber}}. {{name}}</h2>
+      <h2 class="challenge-entry-title">{{id}}. {{name}}</h2>
       <div class="challenge-entry-image">
         <img src="{{image}}" alt="{{name}} Cover">
       </div>
       <p class="challenge-entry-description">{{description}}</p>
-      <div class="challenge-entry-meta">
-        <span>Platform: {{platform}}</span>
-        <span>Difficulty: {{difficulty}}</span>
-        <span>Rating: {{rating}}/10</span>
-      </div>
+      <div class="challenge-entry-rating">RATING: {{rating}}/5</div>
     </div>
     <hr />
     {{/each}}

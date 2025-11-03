@@ -145,6 +145,22 @@
     padding: 10px;
     text-align: center;
   }
+
+  .flip-card:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 18px #00ffcc;
+}
+
+/* optional: glowing border pulse */
+.flip-card:hover .flip-card-front {
+  border-color: #00ffcc;
+  animation: card-hover-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes card-hover-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 20, 80, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(255, 20, 80, 0.8); }
+}
   
   /* -------------------------------
      BACKGROUND GAME NAMES
@@ -180,4 +196,186 @@
     padding: 4px;
     border-radius: 6px;
   }
+
+#game-cards {
+  position: relative;
+  min-height: 320px;
+  overflow: visible;  /* let cards grow on hover */
+}
   
+
+/* fade the non-selected cards out */
+/* nicer disappearance for unselected cards */
+.card-fade-away {
+  animation: backlog-card-dissolve 1.5s ease-out forwards;
+  pointer-events: none;
+}
+
+/* fade the actual front/back too so we don't see ghost layers */
+.card-fade-away .flip-card-inner {
+  opacity: 0;
+  transition: opacity 1.2s ease-out;
+}
+
+@keyframes backlog-card-dissolve {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    filter: blur(2px);
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(5px);
+    transform: scale(0.94);
+  }
+}
+
+
+
+/* selected card gets a little bigger and on top */
+.card-chosen {
+  transform: scale(1.05);
+  z-index: 10;
+  position: relative;
+}
+
+/* shake effect */
+@keyframes backlog-shake {
+  0% { transform: scale(1.05) translateX(0); }
+  20% { transform: scale(1.05) translateX(-5px); }
+  40% { transform: scale(1.05) translateX(5px); }
+  60% { transform: scale(1.05) translateX(-4px); }
+  80% { transform: scale(1.05) translateX(4px); }
+  100% { transform: scale(1.05) translateX(0); }
+}
+
+.card-shake {
+  animation: backlog-shake .35s ease-in-out 1;
+}
+
+/* ATTACKED badge */
+/* BADASS "ATTACKED" LABEL */
+.attack-badge {
+  position: absolute;
+  bottom: -3.5rem;
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-weight: 900;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #fff;
+  background: linear-gradient(90deg, #ff005e 0%, #ff3366 25%, #ff005e 50%, #ff3366 75%, #ff005e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(255, 20, 80, 0.7));
+  animation: attacked-pop 0.4s ease-out forwards, attacked-flicker 2s linear 0.4s 3;
+  user-select: none;
+  pointer-events: none;
+}
+
+.attack-badge-flare {
+  position: absolute;
+  bottom: -3.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 50px;
+  background: radial-gradient(circle, rgba(255, 0, 90, 0.4) 0%, rgba(255, 0, 90, 0) 70%);
+  filter: blur(8px);
+  animation: flare-fade 1.8s ease-out forwards;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes flare-fade {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.6); }
+  30% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) scale(1.3); }
+}
+
+/* subtle grow/pop when it appears */
+@keyframes attacked-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.3);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* faint, irregular flicker to simulate power or energy */
+@keyframes attacked-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(255, 20, 80, 0.7));
+  }
+  20%, 24%, 55% {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 2px rgba(255, 20, 80, 0.4));
+  }
+}
+
+
+.flip-card {
+  cursor: pointer;
+}
+.flip-card .flip-card-inner,
+.flip-card .flip-card-front,
+.flip-card .flip-card-back {
+  cursor: pointer;
+}
+
+/* shockwave / glow under chosen card */
+.attack-pulse {
+  position: absolute;
+  bottom: -3.6rem; /* just under the card, adjust if needed */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 140px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(225,17,72,0.45) 0%, rgba(225,17,72,0) 65%);
+  pointer-events: none;
+  filter: blur(3px);
+  animation: attack-pulse-ring 1.1s ease-out forwards;
+  z-index: -1; /* sit behind the card */
+}
+
+@keyframes attack-pulse-ring {
+  0% {
+    opacity: 0.9;
+    transform: translateX(-50%) scale(0.3);
+  }
+  60% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(1.25);
+  }
+}
+
+/* optional: a soft breathing glow on the card itself */
+.attack-glow {
+  box-shadow: 0 0 35px rgba(225,17,72,0.55);
+  animation: attack-glow-breathe 1.5s ease-in-out 2;
+}
+
+@keyframes attack-glow-breathe {
+  0% { box-shadow: 0 0 10px rgba(225,17,72,0.3); }
+  50% { box-shadow: 0 0 35px rgba(225,17,72,0.7); }
+  100% { box-shadow: 0 0 10px rgba(225,17,72,0.3); }
+}

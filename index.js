@@ -48,6 +48,31 @@ function safeEq(a, b) {
   return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
 }
 
+const VALID_YEARS = [2020, 2021, 2022, 2023, 2024, 2025];
+
+function getChallengeForYear(year) {
+  if (!VALID_YEARS.includes(year)) {
+    return [];
+  }
+
+  // your schema: challenge_2020, challenge_2021, ..., challenge_2025
+  const tableName = year === 2000 ? 'challenge' : `challenge_${year}`;
+
+  try {
+    // easiest fix: just select everything
+    const stmt = db.prepare(`
+      SELECT *
+      FROM ${tableName}
+      ORDER BY id ASC
+    `);
+    return stmt.all();
+  } catch (err) {
+    console.error(`Error reading table ${tableName}:`, err.message);
+    return [];
+  }
+}
+
+
 // Protect /admin routes (all of them)
 function requireBasicAuth(req, res, next) {
   if (!req.path.startsWith('/admin')) return next();
@@ -89,61 +114,79 @@ app.get("/yearly-challenge-2020", (req, res, next) => {
   }
 });
 
-app.get("/yearly-challenge-2021", (req, res, next) => {
-  try {
-    const rows = db.prepare("SELECT * FROM challenge_2021").all();
-    res.render("challenge_2021.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2021, title: "2021 Challenge"  });
-  } catch (err) {
-    console.error("SQLite error:", err.message);
-    next(err);
+// app.get("/yearly-challenge-2021", (req, res, next) => {
+//   try {
+//     const rows = db.prepare("SELECT * FROM challenge_2021").all();
+//     res.render("challenge_2021.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2021, title: "2021 Challenge"  });
+//   } catch (err) {
+//     console.error("SQLite error:", err.message);
+//     next(err);
+//   }
+// });
+
+// app.get("/yearly-challenge-2022", (req, res, next) => {
+//   try {
+//     const rows = db.prepare("SELECT * FROM challenge_2022").all();
+//     res.render("challenge_2022.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2022, title: "2022 Challenge"  });
+//   } catch (err) {
+//     console.error("SQLite error:", err.message);
+//     next(err);
+//   }
+// });
+
+// app.get("/yearly-challenge-2023", (req, res, next) => {
+//   try {
+//     const rows = db.prepare("SELECT * FROM challenge_2023").all();
+//     res.render("challenge_2023.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2023, title: "2023 Challenge"  });
+//   } catch (err) {
+//     console.error("SQLite error:", err.message);
+//     next(err);
+//   }
+// });
+
+// app.get("/yearly-challenge-2024", (req, res, next) => {
+//   try {
+//     const rows = db.prepare("SELECT * FROM challenge_2024").all();
+//     res.render("challenge_2024.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2024, title: "2024 Challenge"  });
+//   } catch (err) {
+//     console.error("SQLite error:", err.message);
+//     next(err);
+//   }
+// });
+
+// app.get("/yearly-challenge-2025", (req, res, next) => {
+//   try {
+//     // Order however you want to *display* the list.
+//     // If “beaten order” == insert order, id ASC is fine.
+//     const rows = db.prepare("SELECT * FROM challenge_2025 ORDER BY id ASC").all();
+
+//     // Add a sequential display number (1..N) regardless of id gaps
+//     rows.forEach((row, i) => { row.displayNumber = i + 1; });
+
+//     res.render("challenge_2025.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2025, title: "2025 Challenge"  });
+//   } catch (err) {
+//     console.error("SQLite error:", err.message);
+//     next(err);
+//   }
+// });
+
+app.get('/yearly-challenge-:year', (req, res) => {
+  const year = Number(req.params.year);
+
+  if (Number.isNaN(year)) {
+    return res.status(400).send('Invalid year');
   }
+
+  const result = getChallengeForYear(year);
+
+  res.render('challenge', {
+    title: `${year} Challenge`,
+    year,
+    activeYear: year,
+    result
+  });
 });
 
-app.get("/yearly-challenge-2022", (req, res, next) => {
-  try {
-    const rows = db.prepare("SELECT * FROM challenge_2022").all();
-    res.render("challenge_2022.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2022, title: "2022 Challenge"  });
-  } catch (err) {
-    console.error("SQLite error:", err.message);
-    next(err);
-  }
-});
-
-app.get("/yearly-challenge-2023", (req, res, next) => {
-  try {
-    const rows = db.prepare("SELECT * FROM challenge_2023").all();
-    res.render("challenge_2023.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2023, title: "2023 Challenge"  });
-  } catch (err) {
-    console.error("SQLite error:", err.message);
-    next(err);
-  }
-});
-
-app.get("/yearly-challenge-2024", (req, res, next) => {
-  try {
-    const rows = db.prepare("SELECT * FROM challenge_2024").all();
-    res.render("challenge_2024.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2024, title: "2024 Challenge"  });
-  } catch (err) {
-    console.error("SQLite error:", err.message);
-    next(err);
-  }
-});
-
-app.get("/yearly-challenge-2025", (req, res, next) => {
-  try {
-    // Order however you want to *display* the list.
-    // If “beaten order” == insert order, id ASC is fine.
-    const rows = db.prepare("SELECT * FROM challenge_2025 ORDER BY id ASC").all();
-
-    // Add a sequential display number (1..N) regardless of id gaps
-    rows.forEach((row, i) => { row.displayNumber = i + 1; });
-
-    res.render("challenge_2025.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2025, title: "2025 Challenge"  });
-  } catch (err) {
-    console.error("SQLite error:", err.message);
-    next(err);
-  }
-});
 
 // -------- Kaizo Page --------
 

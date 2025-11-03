@@ -2,13 +2,16 @@
    Layout & Typography
 ---------------------------------- */
 .challenge-wrapper {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 60px 20px;
+  padding: 60px 20px 100px;
   font-family: 'Inter', sans-serif;
   color: #333;
 }
 
+/* -------------------------------
+   Title
+---------------------------------- */
 .challenge-title {
   font-family: 'Orbitron', sans-serif;
   font-size: 4rem;
@@ -41,6 +44,11 @@
   background-color: #444;
 }
 
+.challenge-year-links a.active {
+  background-color: #3aa6d0;
+  font-weight: bold;
+}
+
 /* -------------------------------
    Modal Button + Modal
 ---------------------------------- */
@@ -61,8 +69,7 @@
   display: none;
   position: fixed;
   z-index: 1000;
-  left: 0;
-  top: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
@@ -103,80 +110,132 @@
 }
 
 /* -------------------------------
-   Game Entry
+   Game Entries (Cards)
 ---------------------------------- */
+.challenge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* each entry is a card */
 .challenge-entry {
-  padding: 40px 0;
+  background: #ffffff;
+  padding: 48px 42px;
+  border-radius: 16px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.02);
   text-align: center;
 }
 
+/* alternating backgrounds */
+.challenge-entry:nth-of-type(even) {
+  background: #f7f7f7;
+}
+
+/* title */
 .challenge-entry-title {
   font-family: 'Orbitron', sans-serif;
-  font-size: 2rem;
+  font-size: 1.7rem;
   margin-bottom: 20px;
 }
 
+/* image — you said 800px looks right */
 .challenge-entry-image img {
   display: block;
-  margin: 0 auto 20px;
-  max-width: 80%;
-  border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  margin: 0 auto 18px;
+  max-width: 800px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
 }
 
-.challenge-entry-meta {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 20px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
-  color: #444;
-  flex-wrap: wrap;
-}
-
-.challenge-entry-meta span {
-  text-align: center;
-}
-
+/* description */
 .challenge-entry-description {
   font-size: 1rem;
   line-height: 1.7;
-  max-width: 800px;
-  margin: 0 auto 20px;
+  max-width: 950px;
+  margin: 0 auto 22px;
   text-align: left;
-}
-
-.challenge-entry-rating {
-  font-size: 1.1rem;
-  font-weight: bold;
-  font-family: 'Orbitron', sans-serif;
-  color: #444;
+  color: #333;
 }
 
 /* -------------------------------
-   HR Style
+   Meta / Stats row (with Lucide)
 ---------------------------------- */
-hr {
-  border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  margin: 40px 0;
+.challenge-entry-meta {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.challenge-entry-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0f0f0;
+  border-radius: 9999px;
+  padding: 6px 18px 6px 18px;
+  border: 1px solid rgba(0,0,0,0.08);
+  transition: all 0.25s ease;
+  position: relative;
+  cursor: default;
+}
+
+.challenge-entry-meta i[data-lucide] {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.7;
+}
+
+.challenge-entry-meta .label {
+  opacity: 0.7;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+/* hover effect */
+.challenge-entry-meta > span:hover {
+  background: #3aa6d0;
+  color: #fff;
+  border-color: #3aa6d0;
+  box-shadow: 0 0 10px rgba(58,166,208,0.4);
+}
+
+.challenge-entry-meta > span:hover i[data-lucide] {
+  stroke: #fff;
 }
 
 /* -------------------------------
    Responsive
 ---------------------------------- */
-@media (max-width: 768px) {
-  .challenge-title {
-    font-size: 2.5rem;
+@media (max-width: 900px) {
+  .challenge-entry {
+    padding: 34px 20px;
   }
 
   .challenge-entry-description {
     text-align: center;
+    max-width: 100%;
+  }
+
+  .challenge-entry-image img {
+    max-width: 360px;
+  }
+
+  .challenge-entry-meta {
+    gap: 16px;
   }
 }
 
-.challenge-year-links a.active {
-  background-color: #3aa6d0;   /* your bluish theme color */
-  font-weight: bold;
+@media (max-width: 768px) {
+  .challenge-title {
+    font-size: 2.5rem;
+  }
 }

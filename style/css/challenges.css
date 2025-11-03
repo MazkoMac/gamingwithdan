@@ -4,8 +4,8 @@
 .challenges-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 80px;
   padding: 80px 20px;
+  gap: 0; /* we'll handle spacing below */
 }
 
 /* Full width image banner */
@@ -24,18 +24,24 @@
 .challenge-block {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 70px;                   /* more room between text and image */
   align-items: center;
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 5px 0;
+  margin: 0 auto 40px;         /* section spacing */
+  padding: 80px 60px;          /* more breathing room inside */
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
 }
-
 
 .challenge-block.alt-bg {
-  padding: 60px 20px;
-  border-radius: 8px;
+  background: #f7f7f7;
+  padding: 80px 60px;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
 }
+
 
 .challenge-text {
   font-family: 'Inter', sans-serif;
@@ -57,11 +63,12 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
+/* dots: same spacing as blocks */
 .section-dots {
   display: flex;
   justify-content: center;
   gap: 6px;
-  margin: 10px auto;
+  margin: 30px auto 40px; /* space between sections */
 }
 
 .section-dots span {
@@ -69,7 +76,11 @@
   height: 6px;
   background-color: #008caa;
   border-radius: 50%;
-  opacity: 0.7;
+  opacity: 0.4;
+}
+
+.section-dots span:nth-child(2) {
+  opacity: 1;
 }
 
 /* Responsive */
@@ -86,5 +97,4 @@
   .challenge-text {
     padding: 0 10px;
   }
-} 
-
+}

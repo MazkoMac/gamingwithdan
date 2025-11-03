@@ -7,13 +7,30 @@
 </main>
 
 <script>
+  // global state for this page
+  let currentCardEls = [];
+  let canSelectCard = false;
+  let backlogTimers = [];
+  let backlogCancelled = false; // <--- master kill switch
+
+  function addTimer(id) {
+    backlogTimers.push(id);
+  }
+
   async function drawBacklog() {
+    // reset everything for a fresh run
+    backlogTimers.forEach(clearTimeout);
+    backlogTimers = [];
+    backlogCancelled = false; // <--- we're doing a new draw
+    canSelectCard = false;
+
     const unlockSound = new Audio('/style/sounds/unlock.mp3');
-    unlockSound.play();
+    try { unlockSound.play(); } catch (e) {}
 
     const button = document.getElementById('draw-btn');
     const container = document.getElementById('game-cards');
     container.innerHTML = '';
+    currentCardEls = [];
 
     if (!button.classList.contains('rise-up')) {
       button.classList.add('rise-up');
@@ -35,7 +52,6 @@
         front.className = 'flip-card-front';
         front.textContent = "?";
 
-
         const back = document.createElement('div');
         back.className = 'flip-card-back';
         back.textContent = game;
@@ -45,32 +61,170 @@
         card.appendChild(inner);
         container.appendChild(card);
 
+        card.dataset.gameName = game;
         cards.push(card);
       });
 
-      setTimeout(() => {
+      currentCardEls = cards;
+
+      // 1) staged appear
+      const appearTimer = setTimeout(() => {
+        if (backlogCancelled) return;  // <--- ignore if user already picked
         cards.forEach((card, index) => {
-          setTimeout(() => {
+          const t = setTimeout(() => {
+            if (backlogCancelled) return;
             card.classList.add('dissolve-in');
           }, index * 150);
+          addTimer(t);
         });
 
-        setTimeout(() => {
+        // 2) then staged flip
+        const flipStart = cards.length * 150 + 500;
+        const flipTimer = setTimeout(() => {
+          if (backlogCancelled) return;
           cards.forEach((card, index) => {
-            setTimeout(() => {
+            const tt = setTimeout(() => {
+              if (backlogCancelled) return;
               const sound = new Audio('/style/sounds/flip.mp3');
-              sound.play();
+              try { sound.play(); } catch (e) {}
               card.classList.add('flipped');
             }, index * 500);
+            addTimer(tt);
           });
-        }, cards.length * 150 + 500);
+
+          // 3) finally, allow selection
+          const allowTimer = setTimeout(() => {
+            if (backlogCancelled) return;
+            canSelectCard = true;
+            cards.forEach(cardEl => {
+              cardEl.addEventListener('click', () => handleCardSelect(cardEl));
+            });
+          }, (cards.length * 500) + 650);
+          addTimer(allowTimer);
+
+        }, flipStart);
+        addTimer(flipTimer);
 
       }, 1000);
+      addTimer(appearTimer);
 
     } catch (err) {
       console.error("❌ Error in drawBacklog():", err);
     }
   }
+
+ function handleCardSelect(selectedCard) {
+  if (!canSelectCard) return;
+  canSelectCard = false;
+  backlogCancelled = true; // stop any leftover reveal/flip logic
+
+  // clear previously scheduled timeouts
+  backlogTimers.forEach(clearTimeout);
+  backlogTimers = [];
+
+  const container = document.getElementById('game-cards');
+  const cards = currentCardEls || [];
+
+  // 1) get container box ONCE
+  const containerRect = container.getBoundingClientRect();
+
+  // 2) FIRST PASS: capture positions for ALL cards before we change layout
+  const frozen = cards.map((card) => {
+    const r = card.getBoundingClientRect();
+    return {
+      el: card,
+      left: r.left - containerRect.left,
+      top: r.top - containerRect.top,
+      width: r.width,
+      height: r.height
+    };
+  });
+
+  // 3) SECOND PASS: apply absolute positioning using frozen values
+  frozen.forEach((item) => {
+    const card = item.el;
+    card.style.position = 'absolute';
+    card.style.left = item.left + 'px';
+    card.style.top = item.top + 'px';
+    card.style.width = item.width + 'px';
+    card.style.height = item.height + 'px';
+    card.style.zIndex = card === selectedCard ? '10' : '5';
+  });
+
+  // 4) fade out *other* cards slowly
+  let delay = 0;
+  const fadeDuration = 1500;
+
+  cards.forEach((card) => {
+    if (card === selectedCard) return;
+
+    const t = setTimeout(() => {
+      card.classList.add('card-fade-away');
+
+      const rm = setTimeout(() => {
+        if (card.parentNode) card.parentNode.removeChild(card);
+      }, fadeDuration + 80);
+      addTimer(rm);
+
+    }, delay);
+    addTimer(t);
+
+    delay += 350; // nice cascade
+  });
+
+  // 5) after fades, move selected to center
+  const moveDelay = delay + 200;
+  const moveTimer = setTimeout(() => {
+    const targetLeft = (containerRect.width / 2) - (selectedCard.offsetWidth / 2);
+    const targetTop = (containerRect.height / 2) - (selectedCard.offsetHeight / 2);
+
+    selectedCard.style.transition = 'left .45s ease, top .45s ease';
+    selectedCard.style.left = targetLeft + 'px';
+    selectedCard.style.top = targetTop + 'px';
+    selectedCard.style.zIndex = '20';
+  }, moveDelay);
+  addTimer(moveTimer);
+
+  // 6) shake + ATTACKED
+  const celebrateTimer = setTimeout(() => {
+    selectedCard.classList.add('card-shake');
+
+    try {
+      const boom = new Audio('/style/sounds/unlock.mp3');
+      boom.play();
+    } catch (e) {}
+
+    const badge = document.createElement('div');
+    badge.className = 'attack-badge';
+    badge.textContent = 'ATTACKED';
+    selectedCard.appendChild(badge);
+
+    // Add faint flare behind it
+const flare = document.createElement('div');
+flare.className = 'attack-badge-flare';
+selectedCard.appendChild(flare);
+
+    const pulse = document.createElement('div');
+pulse.className = 'attack-pulse';
+selectedCard.appendChild(pulse);
+
+// optional: glow the card a bit
+selectedCard.classList.add('attack-glow');
+
+// clean up pulse after it finishes so DOM doesn't grow forever
+setTimeout(() => {
+  if (pulse.parentNode) {
+    pulse.parentNode.removeChild(pulse);
+  }
+  selectedCard.classList.remove('attack-glow');
+}, 1600);
+
+
+  }, moveDelay + 550);
+  addTimer(celebrateTimer);
+}
+
+
 
   async function populateBacklogBackground() {
     const res = await fetch('/api/backlog/sample');
@@ -89,3 +243,4 @@
 
   document.addEventListener('DOMContentLoaded', populateBacklogBackground);
 </script>
+
