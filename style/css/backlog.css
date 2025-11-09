@@ -379,3 +379,55 @@
   50% { box-shadow: 0 0 35px rgba(225,17,72,0.7); }
   100% { box-shadow: 0 0 10px rgba(225,17,72,0.3); }
 }
+
+@media (max-width: 768px) {
+  /* let the page scroll and make room for the button */
+  main.layout-lock {
+    height: auto;
+    min-height: 100vh;
+    padding-top: 200px;  /* <- this is the key: space for the button */
+  }
+
+  /* cards: now we don't need a giant margin-top */
+  #game-cards,
+  .card-grid {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 24px;
+    margin: 0 auto 40px !important;  /* start right after the padding-top */
+  }
+
+  .flip-card {
+    width: 180px;
+    height: 110px;
+  }
+
+  /* keep button centered on mobile */
+  #draw-btn,
+  #draw-btn.rise-up {
+    top: 80px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  #backlog-bg {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  main.layout-lock {
+    padding-top: 200px;
+  }
+  .flip-card {
+    width: 170px;
+    height: 105px;
+  }
+}
+
