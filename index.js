@@ -55,22 +55,29 @@ function getChallengeForYear(year) {
     return [];
   }
 
-  // your schema: challenge_2020, challenge_2021, ..., challenge_2025
   const tableName = year === 2000 ? 'challenge' : `challenge_${year}`;
 
   try {
-    // easiest fix: just select everything
     const stmt = db.prepare(`
       SELECT *
       FROM ${tableName}
       ORDER BY id ASC
     `);
-    return stmt.all();
+    const rows = stmt.all();
+
+    // ✅ assign sequential numbers for display
+    const result = rows.map((row, i) => ({
+      ...row,
+      displayNumber: i + 1
+    }));
+
+    return result;
   } catch (err) {
     console.error(`Error reading table ${tableName}:`, err.message);
     return [];
   }
 }
+
 
 
 // Protect /admin routes (all of them)
@@ -237,25 +244,41 @@ app.get("/backlog", (req, res) => {
 // Select N Games at Random (API)
 app.get("/api/backlog/random", (req, res) => {
   const countRaw = parseInt(req.query.count, 10);
-  const count = Number.isNaN(countRaw) ? 6 : Math.max(1, Math.min(100, countRaw)); // clamp 1..100
+  const count = Number.isNaN(countRaw)
+    ? 6
+    : Math.max(1, Math.min(100, countRaw)); // clamp 1..100
+
   try {
-    const rows = db.prepare("SELECT name FROM backlog ORDER BY RANDOM() LIMIT ?").all(count);
-    const games = rows.map(r => r.name);
-    res.json(games);
+    const rows = db.prepare(`
+      SELECT id, name, COALESCE(source, '') AS source
+      FROM backlog
+      ORDER BY RANDOM()
+      LIMIT ?
+    `).all(count);
+
+    // now we return full objects, not just name strings
+    res.json(rows);
   } catch (err) {
     console.error("SQLite error (backlog/random):", err.message);
     res.status(500).json({ error: "Database error" });
   }
 });
 
-app.get("/api/backlog/sample", (req, res) => {
+
+// --- API: sample backlog names for background ---
+app.get('/api/backlog/sample', (req, res) => {
   try {
-    const rows = db.prepare("SELECT name FROM backlog ORDER BY RANDOM() LIMIT 100").all();
-    const games = rows.map(r => r.name);
-    res.json(games);
+    const rows = db.prepare(`
+      SELECT name
+      FROM backlog
+      ORDER BY RANDOM()
+      LIMIT 30
+    `).all();
+
+    res.json(rows.map(r => r.name));
   } catch (err) {
-    console.error("SQLite error (backlog/sample):", err.message);
-    res.status(500).json({ error: "Database error" });
+    console.error('Error fetching backlog sample:', err);
+    res.status(500).json({ error: 'Failed to fetch backlog sample' });
   }
 });
 
@@ -303,7 +326,11 @@ app.post('/admin/save', (req, res) => {
 // --- Admin: Backlog (UI) ---
 app.get('/admin/backlog', (req, res) => {
   const rows = db
-    .prepare('SELECT id, name FROM backlog ORDER BY name COLLATE NOCASE')
+    .prepare(`
+      SELECT id, name, COALESCE(source, '') AS source
+      FROM backlog
+      ORDER BY name COLLATE NOCASE
+    `)
     .all();
 
   res.render('admin/backlog', {
@@ -312,34 +339,54 @@ app.get('/admin/backlog', (req, res) => {
   });
 });
 
+
 // --- Admin: Backlog (INSERT) ---
 app.post('/admin/backlog/save', (req, res) => {
   try {
     const clean = (s) => (s ?? '').toString().trim();
-    // Optional: collapse inner whitespace so "Super   Mario" == "Super Mario"
     const normalize = (s) => s.replace(/\s+/g, ' ');
 
+    // incoming fields
     let name = clean(req.body.name);
+    let source = clean(req.body.source); // <- new
+
     if (!name) {
-      return res.status(400).send('Name is required. <a href="/admin/backlog">Back</a>');
+      return res
+        .status(400)
+        .send('Name is required. <a href="/admin/backlog">Back</a>');
     }
+
     name = normalize(name);
 
-    // 🔍 dup check (case-insensitive)
-    const dup = db.prepare('SELECT id FROM backlog WHERE name = ? COLLATE NOCASE').get(name);
+    // dup check (case-insensitive)
+    const dup = db
+      .prepare('SELECT id FROM backlog WHERE name = ? COLLATE NOCASE')
+      .get(name);
     if (dup) {
-      return res.status(409).send('Game already in backlog. <a href="/admin/backlog">Back</a>');
+      return res
+        .status(409)
+        .send('Game already in backlog. <a href="/admin/backlog">Back</a>');
     }
 
-    const info = db.prepare('INSERT INTO backlog (name) VALUES (?)').run(name);
+    // insert with source
+    const info = db
+      .prepare('INSERT INTO backlog (name, source) VALUES (?, ?)')
+      .run(name, source || '');
+
     res
       .status(201)
-      .send(`Saved to backlog! New id = ${info.lastInsertRowid}. <a href="/admin/backlog">Add another</a>`);
+      .send(
+        `Saved to backlog! New id = ${info.lastInsertRowid}. <a href="/admin/backlog">Add another</a>`
+      );
+    // or: res.redirect('/admin/backlog');
   } catch (err) {
     console.error('Backlog insert error:', err);
-    res.status(500).send('Error saving backlog entry. <a href="/admin/backlog">Back</a>');
+    res
+      .status(500)
+      .send('Error saving backlog entry. <a href="/admin/backlog">Back</a>');
   }
 });
+
 
 // ---Admin : Backlog (DELETE) ---
 

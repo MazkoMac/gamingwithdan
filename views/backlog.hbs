@@ -38,7 +38,8 @@
 
     try {
       const res = await fetch('/api/backlog/random');
-      const games = await res.json();
+      const games = await res.json(); // now: [{id, name, source}, ...]
+
       const cards = [];
 
       games.forEach((game) => {
@@ -54,14 +55,17 @@
 
         const back = document.createElement('div');
         back.className = 'flip-card-back';
-        back.textContent = game;
+        back.textContent = game.name;               // use game.name now
 
         inner.appendChild(front);
         inner.appendChild(back);
         card.appendChild(inner);
         container.appendChild(card);
 
-        card.dataset.gameName = game;
+        // stash data for later
+        card.dataset.gameName = game.name;
+        card.dataset.source = game.source || 'Unknown';
+
         cards.push(card);
       });
 
@@ -69,7 +73,7 @@
 
       // 1) staged appear
       const appearTimer = setTimeout(() => {
-        if (backlogCancelled) return;  // <--- ignore if user already picked
+        if (backlogCancelled) return;
         cards.forEach((card, index) => {
           const t = setTimeout(() => {
             if (backlogCancelled) return;
@@ -113,118 +117,121 @@
     }
   }
 
- function handleCardSelect(selectedCard) {
-  if (!canSelectCard) return;
-  canSelectCard = false;
-  backlogCancelled = true; // stop any leftover reveal/flip logic
+  function handleCardSelect(selectedCard) {
+    if (!canSelectCard) return;
+    canSelectCard = false;
+    backlogCancelled = true; // stop any leftover reveal/flip logic
 
-  // clear previously scheduled timeouts
-  backlogTimers.forEach(clearTimeout);
-  backlogTimers = [];
+    // clear previously scheduled timeouts
+    backlogTimers.forEach(clearTimeout);
+    backlogTimers = [];
 
-  const container = document.getElementById('game-cards');
-  const cards = currentCardEls || [];
+    const container = document.getElementById('game-cards');
+    const cards = currentCardEls || [];
 
-  // 1) get container box ONCE
-  const containerRect = container.getBoundingClientRect();
+    // 1) get container box ONCE
+    const containerRect = container.getBoundingClientRect();
 
-  // 2) FIRST PASS: capture positions for ALL cards before we change layout
-  const frozen = cards.map((card) => {
-    const r = card.getBoundingClientRect();
-    return {
-      el: card,
-      left: r.left - containerRect.left,
-      top: r.top - containerRect.top,
-      width: r.width,
-      height: r.height
-    };
-  });
+    // 2) FIRST PASS: capture positions for ALL cards before we change layout
+    const frozen = cards.map((card) => {
+      const r = card.getBoundingClientRect();
+      return {
+        el: card,
+        left: r.left - containerRect.left,
+        top: r.top - containerRect.top,
+        width: r.width,
+        height: r.height
+      };
+    });
 
-  // 3) SECOND PASS: apply absolute positioning using frozen values
-  frozen.forEach((item) => {
-    const card = item.el;
-    card.style.position = 'absolute';
-    card.style.left = item.left + 'px';
-    card.style.top = item.top + 'px';
-    card.style.width = item.width + 'px';
-    card.style.height = item.height + 'px';
-    card.style.zIndex = card === selectedCard ? '10' : '5';
-  });
+    // 3) SECOND PASS: apply absolute positioning using frozen values
+    frozen.forEach((item) => {
+      const card = item.el;
+      card.style.position = 'absolute';
+      card.style.left = item.left + 'px';
+      card.style.top = item.top + 'px';
+      card.style.width = item.width + 'px';
+      card.style.height = item.height + 'px';
+      card.style.zIndex = card === selectedCard ? '10' : '5';
+    });
 
-  // 4) fade out *other* cards slowly
-  let delay = 0;
-  const fadeDuration = 1500;
+    // 4) fade out *other* cards slowly
+    let delay = 0;
+    const fadeDuration = 1500;
 
-  cards.forEach((card) => {
-    if (card === selectedCard) return;
+    cards.forEach((card) => {
+      if (card === selectedCard) return;
 
-    const t = setTimeout(() => {
-      card.classList.add('card-fade-away');
+      const t = setTimeout(() => {
+        card.classList.add('card-fade-away');
 
-      const rm = setTimeout(() => {
-        if (card.parentNode) card.parentNode.removeChild(card);
-      }, fadeDuration + 80);
-      addTimer(rm);
+        const rm = setTimeout(() => {
+          if (card.parentNode) card.parentNode.removeChild(card);
+        }, fadeDuration + 80);
+        addTimer(rm);
 
-    }, delay);
-    addTimer(t);
+      }, delay);
+      addTimer(t);
 
-    delay += 350; // nice cascade
-  });
+      delay += 350; // nice cascade
+    });
 
-  // 5) after fades, move selected to center
-  const moveDelay = delay + 200;
-  const moveTimer = setTimeout(() => {
-    const targetLeft = (containerRect.width / 2) - (selectedCard.offsetWidth / 2);
-    const targetTop = (containerRect.height / 2) - (selectedCard.offsetHeight / 2);
+    // 5) after fades, move selected to center
+    const moveDelay = delay + 200;
+    const moveTimer = setTimeout(() => {
+      const targetLeft = (containerRect.width / 2) - (selectedCard.offsetWidth / 2);
+      const targetTop = (containerRect.height / 2) - (selectedCard.offsetHeight / 2);
 
-    selectedCard.style.transition = 'left .45s ease, top .45s ease';
-    selectedCard.style.left = targetLeft + 'px';
-    selectedCard.style.top = targetTop + 'px';
-    selectedCard.style.zIndex = '20';
-  }, moveDelay);
-  addTimer(moveTimer);
+      selectedCard.style.transition = 'left .45s ease, top .45s ease';
+      selectedCard.style.left = targetLeft + 'px';
+      selectedCard.style.top = targetTop + 'px';
+      selectedCard.style.zIndex = '20';
+    }, moveDelay);
+    addTimer(moveTimer);
 
-  // 6) shake + ATTACKED
-  const celebrateTimer = setTimeout(() => {
-    selectedCard.classList.add('card-shake');
+    // 6) shake + ATTACKED + show SOURCE
+    const celebrateTimer = setTimeout(() => {
+      selectedCard.classList.add('card-shake');
 
-    try {
-      const boom = new Audio('/style/sounds/unlock.mp3');
-      boom.play();
-    } catch (e) {}
+      try {
+        const boom = new Audio('/style/sounds/unlock.mp3');
+        boom.play();
+      } catch (e) {}
 
-    const badge = document.createElement('div');
-    badge.className = 'attack-badge';
-    badge.textContent = 'ATTACKED';
-    selectedCard.appendChild(badge);
+      const badge = document.createElement('div');
+      badge.className = 'attack-badge';
+      badge.textContent = 'ATTACKED';
+      selectedCard.appendChild(badge);
 
-    // Add faint flare behind it
-const flare = document.createElement('div');
-flare.className = 'attack-badge-flare';
-selectedCard.appendChild(flare);
+      const flare = document.createElement('div');
+      flare.className = 'attack-badge-flare';
+      selectedCard.appendChild(flare);
 
-    const pulse = document.createElement('div');
-pulse.className = 'attack-pulse';
-selectedCard.appendChild(pulse);
+      const pulse = document.createElement('div');
+      pulse.className = 'attack-pulse';
+      selectedCard.appendChild(pulse);
 
-// optional: glow the card a bit
-selectedCard.classList.add('attack-glow');
+      selectedCard.classList.add('attack-glow');
 
-// clean up pulse after it finishes so DOM doesn't grow forever
-setTimeout(() => {
-  if (pulse.parentNode) {
-    pulse.parentNode.removeChild(pulse);
+      // NEW: show source under the chosen card
+      const src = selectedCard.dataset.source || 'Unknown';
+      if (!selectedCard.querySelector('.attack-source')) {
+        const srcP = document.createElement('p');
+        srcP.className = 'attack-source';
+        srcP.textContent = 'Source: ' + src;
+        selectedCard.appendChild(srcP);
+      }
+
+      setTimeout(() => {
+        if (pulse.parentNode) {
+          pulse.parentNode.removeChild(pulse);
+        }
+        selectedCard.classList.remove('attack-glow');
+      }, 1600);
+
+    }, moveDelay + 550);
+    addTimer(celebrateTimer);
   }
-  selectedCard.classList.remove('attack-glow');
-}, 1600);
-
-
-  }, moveDelay + 550);
-  addTimer(celebrateTimer);
-}
-
-
 
   async function populateBacklogBackground() {
     const res = await fetch('/api/backlog/sample');
@@ -243,4 +250,3 @@ setTimeout(() => {
 
   document.addEventListener('DOMContentLoaded', populateBacklogBackground);
 </script>
-

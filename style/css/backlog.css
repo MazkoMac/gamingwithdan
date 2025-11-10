@@ -431,3 +431,51 @@
   }
 }
 
+/* -------------------------------
+   Source label under ATTACKED
+---------------------------------- */
+.attack-source {
+  position: absolute;
+  top: calc(100% + 4.2rem); /* place it below ATTACKED badge */
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-block;
+  white-space: nowrap; /* ✅ keep text on one line */
+  min-width: 160px; /* ✅ ensures it's wide enough for “Source: PlayStation Network” etc. */
+  text-align: center;
+
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: black;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  background: rgba(0, 255, 204, 0.12);
+  border: 1px solid rgba(0, 255, 204, 0.4);
+  box-shadow:
+    0 0 6px rgba(0, 255, 204, 0.4),
+    inset 0 0 8px rgba(0, 255, 204, 0.25);
+  backdrop-filter: blur(3px);
+  animation: source-pulse 2.2s ease-in-out infinite;
+  user-select: none;
+  pointer-events: none;
+}
+
+@keyframes source-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 6px rgba(0, 255, 204, 0.4),
+      inset 0 0 8px rgba(0, 255, 204, 0.25);
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 12px rgba(0, 255, 204, 0.7),
+      inset 0 0 10px rgba(0, 255, 204, 0.45);
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+

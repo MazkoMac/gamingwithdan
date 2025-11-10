@@ -186,22 +186,78 @@
   
   
   
-  /* -------------------------------
-     Responsive
-  ---------------------------------- */
-  @media (max-width: 768px) {
-    .kaizo-card {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .kaizo-card-img img {
-      width: 100%;
-      height: auto;
-    }
-  
-    .kaizo-card-meta {
-      flex-direction: column;
-      gap: 8px;
-    }
+/* -------------------------------
+   Responsive
+---------------------------------- */
+@media (max-width: 1024px) {
+  .kaizo-title {
+    font-size: 3rem;
   }
+  .kaizo-wrapper {
+    padding: 60px 16px;
+  }
+  .kaizo-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .kaizo-title {
+    font-size: 2.4rem;
+    text-align: center;
+  }
+
+  .kaizo-sub {
+    margin-top: 24px;
+    text-align: center;
+  }
+
+  .kaizo-lists {
+    grid-template-columns: 1fr;
+  }
+
+  .kaizo-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 20px;
+  }
+
+  .kaizo-card {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .kaizo-card-img img {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+  }
+
+  .kaizo-card-content {
+    width: 100%;
+  }
+
+  .kaizo-card-meta {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kaizo-wrapper {
+    padding: 50px 14px;
+  }
+
+  .kaizo-title {
+    font-size: 2rem;
+  }
+
+  .kaizo-card {
+    padding: 16px;
+  }
+
+  .kaizo-card-img img {
+    max-width: 100%;
+  }
+}

@@ -4,11 +4,11 @@
   <h1 class="page-title">Manage Backlog</h1>
 
   <div style="text-align:center; margin-bottom:1.5rem;">
-  <a href="/admin" class="btn">← Back to Main Admin</a>
-</div>
+    <a href="/admin" class="btn">← Back to Main Admin</a>
+  </div>
 
   <p class="muted">
-    Add or remove games from your backlog.  
+    Add or remove games from your backlog.
     (These changes will update the <code>backlog</code> table in your SQLite database.)
   </p>
 
@@ -18,12 +18,20 @@
       <h2>Add New Game</h2>
 
       <label for="bl_name">Game Name</label>
-      <input 
-        type="text" 
-        id="bl_name" 
-        name="name" 
-        placeholder="e.g., Hollow Knight" 
+      <input
+        type="text"
+        id="bl_name"
+        name="name"
+        placeholder="e.g., Hollow Knight"
         required
+      >
+
+      <label for="bl_source">Source / Platform</label>
+      <input
+        type="text"
+        id="bl_source"
+        name="source"
+        placeholder="Steam / PSN / Switch / SNES / Epic..."
       >
 
       <button type="submit" class="btn btn-primary">Add to Backlog</button>
@@ -33,6 +41,7 @@
     <aside class="card preview-card">
       <h2>Preview</h2>
       <p id="pv_bl_name" class="preview-text">Game name…</p>
+      <p id="pv_bl_source" class="muted">Source: —</p>
     </aside>
   </section>
 
@@ -46,6 +55,7 @@
           <tr>
             <th style="width: 5rem;">ID</th>
             <th>Game Title</th>
+            <th style="width: 10rem;">Source</th>
             <th style="width: 8rem;">Actions</th>
           </tr>
         </thead>
@@ -54,10 +64,11 @@
             <tr>
               <td>{{this.id}}</td>
               <td>{{this.name}}</td>
+              <td>{{#if this.source}}{{this.source}}{{else}}—{{/if}}</td>
               <td>
-                <form 
-                  method="POST" 
-                  action="/admin/backlog/delete" 
+                <form
+                  method="POST"
+                  action="/admin/backlog/delete"
                   onsubmit="return confirm('Remove {{this.name}} from backlog?');"
                 >
                   <input type="hidden" name="id" value="{{this.id}}">
@@ -77,14 +88,20 @@
 <script>
   (function () {
     const nameInput = document.getElementById('bl_name');
-    const preview = document.getElementById('pv_bl_name');
+    const sourceInput = document.getElementById('bl_source');
+    const pvName = document.getElementById('pv_bl_name');
+    const pvSource = document.getElementById('pv_bl_source');
 
     function updatePreview() {
-      const text = nameInput.value.trim();
-      preview.textContent = text || 'Game name…';
+      const nameVal = (nameInput.value || '').trim();
+      const sourceVal = (sourceInput.value || '').trim();
+
+      pvName.textContent = nameVal || 'Game name…';
+      pvSource.textContent = sourceVal ? 'Source: ' + sourceVal : 'Source: —';
     }
 
     nameInput.addEventListener('input', updatePreview);
+    sourceInput.addEventListener('input', updatePreview);
     updatePreview();
   })();
 </script>
