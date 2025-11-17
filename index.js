@@ -19,7 +19,8 @@ app.engine('hbs', engine({
   defaultLayout: 'layout',
   layoutsDir: path.join(__dirname, 'views/layouts'),
   helpers: {
-    eq: (a, b) => a === b
+    eq: (a, b) => a === b,
+    startsWith: (str = '', prefix = '') => str.startsWith(prefix)
   }
 }));
 
@@ -78,6 +79,19 @@ function getChallengeForYear(year) {
   }
 }
 
+
+function getSetting(key, defaultValue = '0') {
+  const row = db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key);
+  return row ? row.value : defaultValue;
+}
+
+function setSetting(key, value) {
+  db.prepare(`
+    INSERT INTO app_settings (key, value)
+    VALUES (?, ?)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value
+  `).run(key, value);
+}
 
 
 // Protect /admin routes (all of them)
@@ -190,7 +204,9 @@ app.get('/yearly-challenge-:year', (req, res) => {
     title: `${year} Challenge`,
     year,
     activeYear: year,
-    result
+    result,
+    currentPage: `/yearly-challenge-${year}`
+
   });
 });
 
@@ -217,15 +233,24 @@ app.get("/about", (req, res) => {
 
 app.get("/challenges", (req, res, next) => {
   try {
+    // existing counts
     const row1 = db.prepare("SELECT COUNT(*) as gamesCount FROM challenge_2025").get();
     const row2 = db.prepare("SELECT COUNT(*) as kaizoCount FROM kaizo").get();
 
     const gamesCount = row1?.gamesCount ?? 0;
-    const kaizoCount = (row2?.kaizoCount ?? 0) + 24;
+    const kaizoCount = (row2?.kaizoCount ?? 0) + 24; // your SMWC offset
+
+    // settings-based values
+    const rogueliteStreak = Number(getSetting('roguelite_streak', '0')) || 0;
+    const fallGuysCrowns = Number(getSetting('fall_guys_crowns', '0')) || 0;
+    const rocketLeagueRank = getSetting('rocket_league_rank', 'Champion 1 - Division 2');
 
     res.render("challenges.hbs", {
       gamesCount,
       kaizoCount,
+      rogueliteStreak,
+      fallGuysCrowns,
+      rocketLeagueRank,
       currentPage: "challenges",
       title: "Challenges"
     });
@@ -234,6 +259,8 @@ app.get("/challenges", (req, res, next) => {
     next(err);
   }
 });
+
+
 
 // -------- Backlog --------
 
@@ -272,7 +299,7 @@ app.get('/api/backlog/sample', (req, res) => {
       SELECT name
       FROM backlog
       ORDER BY RANDOM()
-      LIMIT 30
+      LIMIT 60
     `).all();
 
     res.json(rows.map(r => r.name));
@@ -286,8 +313,18 @@ app.get('/api/backlog/sample', (req, res) => {
 
 // -------- Admin (UI only page) --------
 app.get('/admin', (req, res) => {
-  res.render('admin/simple', { title: 'Admin' });
+  const rogueliteStreak = getSetting('roguelite_streak', '0');
+  const fallGuysCrowns = getSetting('fall_guys_crowns', '0');
+  const rocketLeagueRank = getSetting('rocket_league_rank', 'Unranked');
+
+  res.render('admin/simple', {
+    title: 'Admin',
+    rogueliteStreak,
+    fallGuysCrowns,
+    rocketLeagueRank
+  });
 });
+
 
 // -------- Admin save (INSERT) --------
 function clean(s) {
@@ -409,6 +446,45 @@ app.post('/admin/backlog/delete', (req, res) => {
     res.status(500).send('Error deleting backlog entry. <a href="/admin/backlog">Back</a>');
   }
 });
+
+// increment rogue streak
+app.post('/admin/roguelite-streak/increment', (req, res) => {
+  const current = Number(getSetting('roguelite_streak', '0')) || 0;
+  const next = current + 1;
+  setSetting('roguelite_streak', String(next));
+  res.redirect('/admin'); // or back to the challenges admin page
+});
+
+// reset rogue streak
+app.post('/admin/roguelite-streak/reset', (req, res) => {
+  setSetting('roguelite_streak', '0');
+  res.redirect('/admin');
+});
+
+// --- Fall Guys crowns: increment ---
+app.post('/admin/fall-guys/increment', (req, res) => {
+  const current = Number(getSetting('fall_guys_crowns', '0')) || 0;
+  const next = current + 1;
+  setSetting('fall_guys_crowns', String(next));
+  res.redirect('/admin');
+});
+
+// --- Fall Guys crowns: set explicit value ---
+app.post('/admin/fall-guys/update', (req, res) => {
+  const raw = (req.body.crowns || '').toString().trim();
+  const num = Number(raw);
+  const safe = Number.isFinite(num) && num >= 0 ? Math.floor(num) : 0;
+  setSetting('fall_guys_crowns', String(safe));
+  res.redirect('/admin');
+});
+
+// --- Rocket League rank: free-text update ---
+app.post('/admin/rocket-league/update', (req, res) => {
+  const rank = (req.body.rank || '').toString().trim() || 'Unranked';
+  setSetting('rocket_league_rank', rank);
+  res.redirect('/admin');
+});
+
 
 // ---------------------------------------------------
 // Admin: Manage challenge tables (2021-2025 + legacy)
