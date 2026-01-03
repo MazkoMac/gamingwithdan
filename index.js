@@ -2,9 +2,7 @@ const express = require("express");
 const { db } = require('./db');
 const { engine } = require("express-handlebars");
 const path = require("path");
-// const bodyParser = require("body-parser");
 const session = require("express-session");
-// const sqlite3 = require('sqlite3').verbose();
 const hbs = require("hbs");
 
 const app = express();
@@ -20,7 +18,8 @@ app.engine('hbs', engine({
   layoutsDir: path.join(__dirname, 'views/layouts'),
   helpers: {
     eq: (a, b) => a === b,
-    startsWith: (str = '', prefix = '') => str.startsWith(prefix)
+    startsWith: (str = '', prefix = '') => str.startsWith(prefix),
+    json: (context) => JSON.stringify(context, null, 2)
   }
 }));
 
@@ -34,7 +33,6 @@ app.use("/style", express.static("style"));
 
 // Middleware
 app.use(express.json());
-// app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended: true }));
 
 
@@ -49,7 +47,7 @@ function safeEq(a, b) {
   return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
 }
 
-const VALID_YEARS = [2020, 2021, 2022, 2023, 2024, 2025];
+const VALID_YEARS = [2020, 2021, 2022, 2023, 2024, 2025, 2026];
 
 function getChallengeForYear(year) {
   if (!VALID_YEARS.includes(year)) {
@@ -135,62 +133,6 @@ app.get("/yearly-challenge-2020", (req, res, next) => {
   }
 });
 
-// app.get("/yearly-challenge-2021", (req, res, next) => {
-//   try {
-//     const rows = db.prepare("SELECT * FROM challenge_2021").all();
-//     res.render("challenge_2021.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2021, title: "2021 Challenge"  });
-//   } catch (err) {
-//     console.error("SQLite error:", err.message);
-//     next(err);
-//   }
-// });
-
-// app.get("/yearly-challenge-2022", (req, res, next) => {
-//   try {
-//     const rows = db.prepare("SELECT * FROM challenge_2022").all();
-//     res.render("challenge_2022.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2022, title: "2022 Challenge"  });
-//   } catch (err) {
-//     console.error("SQLite error:", err.message);
-//     next(err);
-//   }
-// });
-
-// app.get("/yearly-challenge-2023", (req, res, next) => {
-//   try {
-//     const rows = db.prepare("SELECT * FROM challenge_2023").all();
-//     res.render("challenge_2023.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2023, title: "2023 Challenge"  });
-//   } catch (err) {
-//     console.error("SQLite error:", err.message);
-//     next(err);
-//   }
-// });
-
-// app.get("/yearly-challenge-2024", (req, res, next) => {
-//   try {
-//     const rows = db.prepare("SELECT * FROM challenge_2024").all();
-//     res.render("challenge_2024.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2024, title: "2024 Challenge"  });
-//   } catch (err) {
-//     console.error("SQLite error:", err.message);
-//     next(err);
-//   }
-// });
-
-// app.get("/yearly-challenge-2025", (req, res, next) => {
-//   try {
-//     // Order however you want to *display* the list.
-//     // If “beaten order” == insert order, id ASC is fine.
-//     const rows = db.prepare("SELECT * FROM challenge_2025 ORDER BY id ASC").all();
-
-//     // Add a sequential display number (1..N) regardless of id gaps
-//     rows.forEach((row, i) => { row.displayNumber = i + 1; });
-
-//     res.render("challenge_2025.hbs", { result: rows, currentPage: "yearly-challenge", activeYear: 2025, title: "2025 Challenge"  });
-//   } catch (err) {
-//     console.error("SQLite error:", err.message);
-//     next(err);
-//   }
-// });
-
 app.get('/yearly-challenge-:year', (req, res) => {
   const year = Number(req.params.year);
 
@@ -233,24 +175,17 @@ app.get("/about", (req, res) => {
 
 app.get("/challenges", (req, res, next) => {
   try {
-    // existing counts
-    const row1 = db.prepare("SELECT COUNT(*) as gamesCount FROM challenge_2025").get();
+    console.log("✅ /challenges using challenge_2026");
+
+    const row1 = db.prepare("SELECT COUNT(*) as gamesCount FROM challenge_2026").get();
     const row2 = db.prepare("SELECT COUNT(*) as kaizoCount FROM kaizo").get();
 
     const gamesCount = row1?.gamesCount ?? 0;
-    const kaizoCount = (row2?.kaizoCount ?? 0) + 24; // your SMWC offset
-
-    // settings-based values
-    const rogueliteStreak = Number(getSetting('roguelite_streak', '0')) || 0;
-    const fallGuysCrowns = Number(getSetting('fall_guys_crowns', '0')) || 0;
-    const rocketLeagueRank = getSetting('rocket_league_rank', 'Champion 1 - Division 2');
+    const kaizoCount = (row2?.kaizoCount ?? 0) + 24;
 
     res.render("challenges.hbs", {
       gamesCount,
       kaizoCount,
-      rogueliteStreak,
-      fallGuysCrowns,
-      rocketLeagueRank,
       currentPage: "challenges",
       title: "Challenges"
     });
@@ -259,6 +194,7 @@ app.get("/challenges", (req, res, next) => {
     next(err);
   }
 });
+
 
 
 
@@ -349,7 +285,7 @@ app.post('/admin/save', (req, res) => {
     }
 
     const info = db.prepare(`
-      INSERT INTO challenge_2025 (name, rating, description, image, difficulty, platform)
+      INSERT INTO challenge_2026 (name, rating, description, image, difficulty, platform)
       VALUES (?, ?, ?, ?, ?, ?)
     `).run(name, rating, description, image, difficulty || 'Normal', platform);
 
@@ -357,7 +293,7 @@ app.post('/admin/save', (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Error saving row. <a href="/admin">Back</a>');
-  }
+  }   
 });
 
 // --- Admin: Backlog (UI) ---

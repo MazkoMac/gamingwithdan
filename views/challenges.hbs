@@ -11,8 +11,8 @@
   <section class="challenge-block">
     <div class="challenge-text">
       <h2>52 Games In A Year</h2>
-      <p>The challenge is quite simple - try to beat 52 games in the current year. This is a feature challenge for the website and has its own dedicated page right <a href="/yearly-challenge-2024">here</a>. Click on "The Challenge" box to get the rules and stipulations for a game to be considered "beat".</p>
-      <p>Games Beat in 2025: <b>{{gamesCount}}</b></p>
+      <p>The challenge is quite simple - try to beat 52 games in the current year. This is a feature challenge for the website and has its own dedicated page right <a href="/yearly-challenge-2026">here</a>. Click on "The Challenge" box to get the rules and stipulations for a game to be considered "beat".</p>
+      <p>Games Beat in 2026: <b>{{gamesCount}}</b></p>
     </div>
     <div class="challenge-image">
       <img src="/style/images/video_games.png" alt="52 Games" class="challenge-img">
@@ -84,3 +84,9 @@
     </div>
   </section>
 </main>
+
+{{#if __debug}}
+  <pre style="background:#111;color:#0f0;padding:12px;border-radius:8px;overflow:auto;">
+DEBUG: {{json __debug}}
+  </pre>
+{{/if}}
