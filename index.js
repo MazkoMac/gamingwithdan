@@ -173,6 +173,7 @@ app.get("/about", (req, res) => {
 
 // -------- Challenges summary (counts) --------
 
+// -------- Challenges summary (counts) --------
 app.get("/challenges", (req, res, next) => {
   try {
     console.log("✅ /challenges using challenge_2026");
@@ -183,9 +184,18 @@ app.get("/challenges", (req, res, next) => {
     const gamesCount = row1?.gamesCount ?? 0;
     const kaizoCount = (row2?.kaizoCount ?? 0) + 24;
 
+    // ✅ pull app_settings too
+    const rogueliteStreak = getSetting('roguelite_streak', '0');
+    const fallGuysCrowns = getSetting('fall_guys_crowns', '0');
+    const rocketLeagueRank = getSetting('rocket_league_rank', 'Unranked');
+
     res.render("challenges.hbs", {
       gamesCount,
       kaizoCount,
+      rogueliteStreak,
+      fallGuysCrowns,
+      rocketLeagueRank,
+
       currentPage: "challenges",
       title: "Challenges"
     });
@@ -194,6 +204,7 @@ app.get("/challenges", (req, res, next) => {
     next(err);
   }
 });
+
 
 
 
