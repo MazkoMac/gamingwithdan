@@ -246,7 +246,7 @@ app.get('/api/backlog/sample', (req, res) => {
       SELECT name
       FROM backlog
       ORDER BY RANDOM()
-      LIMIT 60
+      LIMIT 80
     `).all();
 
     res.json(rows.map(r => r.name));
@@ -309,7 +309,8 @@ app.post('/admin/save', (req, res) => {
 
 // --- Admin: Backlog (UI) ---
 app.get('/admin/backlog', (req, res) => {
-  const rows = db
+  // 1) existing backlog list
+  const backlogRows = db
     .prepare(`
       SELECT id, name, COALESCE(source, '') AS source
       FROM backlog
@@ -317,11 +318,70 @@ app.get('/admin/backlog', (req, res) => {
     `)
     .all();
 
+  // 2) pull all challenge tables dynamically (future-proof)
+  //    includes: challenge (legacy/2020) and challenge_2021, challenge_2022, etc.
+const challengeTables = db
+  .prepare(`
+    SELECT name
+    FROM sqlite_master
+    WHERE type = 'table'
+      AND (
+        name = 'challenge'
+        OR name LIKE 'challenge_%'
+      )
+    ORDER BY name
+  `)
+  .all()
+  .map(r => r.name);
+
+
+  // 3) build one UNION query across all challenge tables
+  //    - we select name
+  //    - optional: include a "year" label
+  let beatenGames = [];
+
+  if (challengeTables.length) {
+    // IMPORTANT: safely quote identifiers (table names) after constraining them above
+    const parts = challengeTables.map((t) => {
+      const safeTable =
+        t === 'challenge' || /^challenge_\d{4}$/.test(t) ? t : null;
+
+      if (!safeTable) return null;
+
+      const yearLabel = (safeTable === 'challenge')
+        ? '2020' // your legacy table is used for 2020
+        : safeTable.replace('challenge_', '');
+
+      return `
+        SELECT
+          TRIM(name) AS name,
+          '${yearLabel}' AS year
+        FROM "${safeTable}"
+        WHERE name IS NOT NULL AND TRIM(name) <> ''
+      `;
+    }).filter(Boolean);
+
+    if (parts.length) {
+      const unionSql = `
+        SELECT name, year
+        FROM (
+          ${parts.join('\nUNION ALL\n')}
+        )
+        GROUP BY name COLLATE NOCASE
+        ORDER BY name COLLATE NOCASE
+      `;
+
+      beatenGames = db.prepare(unionSql).all();
+    }
+  }
+
   res.render('admin/backlog', {
     title: 'Manage Backlog',
-    items: rows
+    items: backlogRows,
+    beatenGames, // <- NEW
   });
 });
+
 
 
 // --- Admin: Backlog (INSERT) ---

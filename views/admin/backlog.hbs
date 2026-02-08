@@ -83,6 +83,35 @@
       <p class="muted">Your backlog is currently empty.</p>
     {{/if}}
   </section>
+
+  {{!-- BEATEN GAMES (ALL YEARS) --}}
+<section class="card backlog-list" style="margin-top: 2rem;">
+  <h2>All Beaten Games ({{beatenGames.length}})</h2>
+
+  {{#if beatenGames.length}}
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Game Title</th>
+          <th style="width: 7rem;">Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each beatenGames}}
+          <tr>
+            <td>{{this.name}}</td>
+            <td>{{this.year}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <p class="muted">No beaten games found in challenge tables.</p>
+  {{/if}}
+</section>
+
+
+
 </div>
 
 <script>
