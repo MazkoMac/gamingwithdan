@@ -285,27 +285,63 @@ app.post('/admin/save', (req, res) => {
     const difficulty  = clean(req.body.difficulty);
     const platform    = clean(req.body.platform);
     const description = clean(req.body.description);
-    let rating        = parseInt(req.body.rating, 10);
+
+    let ratingRaw = clean(req.body.rating);
+    let rating = null;
 
     if (!name) {
       return res.status(400).send('Name is required. <a href="/admin">Back</a>');
     }
-    if (Number.isNaN(rating)) rating = null;
-    if (rating !== null && (rating < 1 || rating > 10)) {
-      return res.status(400).send('Rating must be 1–10. <a href="/admin">Back</a>');
+
+    // ---- rating handling (supports .5 steps) ----
+    if (ratingRaw !== '') {
+      rating = Number.parseFloat(ratingRaw);
+
+      if (!Number.isFinite(rating)) {
+        return res
+          .status(400)
+          .send('Rating must be a number. <a href="/admin">Back</a>');
+      }
+
+      if (rating < 1 || rating > 10) {
+        return res
+          .status(400)
+          .send('Rating must be between 1 and 10. <a href="/admin">Back</a>');
+      }
+
+      // enforce .0 or .5 only
+      const scaled = Math.round(rating * 2);
+      if (Math.abs(rating * 2 - scaled) > 1e-9) {
+        return res
+          .status(400)
+          .send('Rating must be in 0.5 increments (e.g. 8 or 8.5). <a href="/admin">Back</a>');
+      }
+
+      rating = scaled / 2;
     }
+    // --------------------------------------------
 
     const info = db.prepare(`
       INSERT INTO challenge_2026 (name, rating, description, image, difficulty, platform)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(name, rating, description, image, difficulty || 'Normal', platform);
+    `).run(
+      name,
+      rating,
+      description,
+      image,
+      difficulty || 'Normal',
+      platform
+    );
 
-    res.status(201).send(`Saved! New id = ${info.lastInsertRowid}. <a href="/admin">Add another</a>`);
+    res
+      .status(201)
+      .send(`Saved! New id = ${info.lastInsertRowid}. <a href="/admin">Add another</a>`);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error saving row. <a href="/admin">Back</a>');
-  }   
+  }
 });
+
 
 // --- Admin: Backlog (UI) ---
 app.get('/admin/backlog', (req, res) => {
